@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>九江职业技术学院成绩查询系统</title>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
+    <script src="javascripts/jquery.min.js"></script>
+    <script src="javascripts/bootstrap.min.js"></script>
+</head>
+<body>
+    <% if(typeof message !== 'undefined' && message) { %>
+    <div class="alert alert-info alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span>&times;</span></button>
+        <!-- 提示信息 -->
+        <strong>信息</strong> <%= message %>
+    </div>
+    <% } %>
+    <div class="container">
+        <header class="page-header" style="padding-bottom: 16px;">
+            <h1 class="text-center">九江职业技术学院成绩查询系统</h1>
+        </header>
+
+        <form class="form-horizontal" method="POST" action="">
+        <div class="form-group">
+            <label for="stuId" class="col-sm-2 control-label">学号</label>
+            <div class="col-sm-9">
+            <input type="text" name="stuId" class="form-control" id="stuId" placeholder="学号" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="stuPwd" class="col-sm-2 control-label">密码</label>
+            <div class="col-sm-9">
+            <input type="password" name="stuPwd" class="form-control" id="stuPwd" placeholder="教务系统密码" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="code" class="col-sm-2 control-label">验证码</label>
+            <div class="col-sm-9">
+            <input type="text" name="code" class="form-control" id="code" placeholder="验证码" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+                <!-- 验证码 -->
+                <img src="<%- captchaURI %>" alt="点击也不能更换验证码">
+            </div>
+        </div>
+        <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+            <select name="date" class="form-control">
+            <option value="20160">2016-2017学年第一学期</option>
+            <option value="20161">2016-2017学年第二学期</option>
+            <option value="20170">2017-2018学年第一学期</option>
+            <option value="20171">2017-2018学年第二学期</option>
+            <option value="20180">2018-2019学年第一学期</option>
+            <option value="20181">2018-2019学年第二学期</option>
+            </select>
+        </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-9">
+            <button type="submit" class="btn btn-info form-control">查询</button>
+            </div>
+        </div>
+
+        <!-- 隐藏字段 -->
+        <input type="hidden" name="VIEWSTATE" value="<%- VIEWSTATE %>">
+        <input type="hidden" name="session" value="<%- sessionCookie %>">
+        </form>
+    </div>
+</body>
+</html>
