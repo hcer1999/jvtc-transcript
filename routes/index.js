@@ -42,13 +42,14 @@ function isGetTranscriptSuccessfully(html) {
 }
 
 function getHandledTranscript(html) {
-    var studentNameRegexp = /姓名：(.*?)<\/td>/g
+    var studentNameRegexp = /姓名：(.*?)<\/td>/
     var courseRegexp = /<tr class=(B|H)>(.*?)<\/tr>/g;
     var courseHTML;
     var columnRegexp = /<td .*?>(.*?)<br><\/td>/g;
     var columnHTML;
     var transcript = [];
     var result = {};
+    var studentName;
     while((courseHTML = courseRegexp.exec(html)) != null) {
         let course = {};
         let matchArr = [];
@@ -62,7 +63,8 @@ function getHandledTranscript(html) {
         course['score'] = matchArr[7][1];
         transcript.push(course);
     }
-    result['name'] = studentNameRegexp.exec(html)[1];
+    studentName = studentNameRegexp.exec(html);
+    result['name'] = (studentName && studentName[1]) || '';
     result['transcript'] = transcript;
     return result;
 }
