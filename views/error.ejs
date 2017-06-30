@@ -5,7 +5,12 @@
 </head>
 <body>
     <h1><%= message %></h1>
+    <% if(error.status) { %>
     <h2><%= error.status %></h2>
+    <% } %>
+    
+    <% if(error.stack) { %>
     <pre><%= error.stack %></pre>
+    <% } %>
 </body>
 </html>
