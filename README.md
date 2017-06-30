@@ -9,6 +9,13 @@
 ### 安装依赖项
 > npm install
 
+### 设置生产环境
+Windows PowerShell:
+> $env:NODE_ENV = "production"
+
+Linux:
+> export NODE_ENV=production
+
 ### 运行程序
 > npm start
 
