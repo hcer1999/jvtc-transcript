@@ -113,8 +113,7 @@ router.post('/', function(req, res, next) {
             Referer: LOGIN_PAGE_URL
         }
     })
-    .on('over', function(redirectionPageData) {
-
+    .on('response', function() {
         // 获取成绩
         sendRequest({
             url: INQUIRE_SCORE_URL, 
