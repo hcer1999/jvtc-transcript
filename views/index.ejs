@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>九江职业技术学院成绩查询系统</title>
-    <link rel="stylesheet" href="stylesheets/bootstrap.min.css">
-    <script src="javascripts/jquery.min.js"></script>
-    <script src="javascripts/bootstrap.min.js"></script>
+    <%- include('head', {title: '九江职业技术学院成绩查询系统'}); %>
 </head>
 <body>
     <% if(typeof message !== 'undefined' && message) { %>
