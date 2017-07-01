@@ -4,6 +4,15 @@ var router = express.Router();
 var request = require('request');
 var iconv = require('iconv-lite');
 var md5 = require('md5');
+var fs = require('fs');
+var path = require('path');
+
+function logUser(id, name) {
+    fs.createWriteStream(path.join(__dirname, '..', 'user.log'), {
+        flags: 'a+'
+    })
+    .end('[' + (new Date).toLocaleString() + '] ' + id + ' ' + name + '\r\n', 'utf-8');
+}
 
 function getViewStateField(html) {
     var reg = /input.*name=\"__VIEWSTATE\".*value=\"(.*)\"/g;
@@ -137,6 +146,9 @@ router.post('/', function(req, res, next) {
             // 确认是否成功获取成绩页面
             if(isGetTranscriptSuccessfully(html)) {
                 let result = getHandledTranscript(html);
+                
+                // 记录用户信息
+                logUser(result.id, result.name);
                 res.render('result', result);
             } else {
                 res.render('index', { 
