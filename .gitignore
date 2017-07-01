@@ -2,3 +2,4 @@
 /.vscode
 npm-debug.log
 access.log
+user.log
