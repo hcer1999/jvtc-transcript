@@ -43,7 +43,7 @@
         </div>
         <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
-            <select name="date" class="form-control">
+            <select id="datePicker" name="date" class="form-control">
             <option value="20160">2016-2017学年第一学期</option>
             <option value="20161">2016-2017学年第二学期</option>
             <option value="20170">2017-2018学年第一学期</option>
@@ -63,6 +63,32 @@
         <input type="hidden" name="VIEWSTATE" value="<%- VIEWSTATE %>">
         <input type="hidden" name="session" value="<%- sessionCookie %>">
         </form>
+
+        <script>
+            (function() {
+                var nowDate = new Date();
+                var thisYear = nowDate.getFullYear();
+                var thisMonth = nowDate.getMonth();
+                var datePicker = document.getElementById('datePicker');
+
+                var optionHTML = [0, 1, 2, 3].map(function(value) {
+                    var year = thisYear - value;
+                    return '<option value="' + year + '0">' + year + '-' + (year + 1) + '学年第一学期</option>' +
+                        '<option value="' + year + '1">' + year + '-' + (year + 1) + '学年第二学期</option>';
+                }).join('');
+
+                $(function() {
+                    $(datePicker).html(optionHTML);
+                    if(thisMonth >=0 && thisMonth < 4) {
+                        datePicker.children[2].selected = true;
+                    } else if(thisMonth >= 4 && thisMonth < 10) {
+                        datePicker.children[3].selected = true;
+                    } else if(thisMonth >= 10 && thisMonth < 12) {
+                        datePicker.children[0].selected = true;
+                    }
+                });
+            })();
+        </script>
     </div>
 </body>
 </html>
