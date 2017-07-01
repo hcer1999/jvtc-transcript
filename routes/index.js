@@ -100,6 +100,9 @@ router.get('/', function(req, res, next) {
         case 'login_failed':
             message = '你没有成功登录，请检查学号、密码以及验证码是否输入正确，注意密码为教务系统密码';
             break;
+        case 'no_record':
+            message = '没有该学期的成绩，注意：2016-2017学年是指2016年9月到2017年9月';
+            break;
         default:
             message = '';
             break;
@@ -165,10 +168,15 @@ router.post('/', function(req, res, next) {
             // 确认是否成功获取成绩页面
             if(isGetTranscriptSuccessfully(html)) {
                 let result = getHandledTranscript(html);
-                
-                // 记录用户信息
-                logUser(result.id, result.name);
-                res.render('result', result);
+
+                // 没有该学期成绩
+                if(result.transcript.length === 0) {
+                    res.redirect('/?message=no_record');
+                } else {                
+                    // 记录用户信息
+                    logUser(result.id, result.name);
+                    res.render('result', result);
+                }
             } else {
                 res.redirect('/?message=login_failed');
             }
