@@ -42,7 +42,8 @@ function isGetTranscriptSuccessfully(html) {
 }
 
 function getHandledTranscript(html) {
-    var studentNameRegexp = /姓名：(.*?)<\/td>/
+    var studentNameRegexp = /姓名：(.*?)<\/td>/;
+    var studentIdRegexp = /学号：(.*?)<\/td>/
     var courseRegexp = /<tr class=(B|H)>(.*?)<\/tr>/g;
     var courseHTML;
     var columnRegexp = /<td .*?>(.*?)<br><\/td>/g;
@@ -50,6 +51,7 @@ function getHandledTranscript(html) {
     var transcript = [];
     var result = {};
     var studentName;
+    var studentId;
     while((courseHTML = courseRegexp.exec(html)) != null) {
         let course = {};
         let matchArr = [];
@@ -64,7 +66,9 @@ function getHandledTranscript(html) {
         transcript.push(course);
     }
     studentName = studentNameRegexp.exec(html);
+    studentId = studentIdRegexp.exec(html);
     result['name'] = (studentName && studentName[1]) || '';
+    result['id'] = (studentId && studentId[1]) || '';
     result['transcript'] = transcript;
     return result;
 }
