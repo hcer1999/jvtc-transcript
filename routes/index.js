@@ -6,6 +6,8 @@ var iconv = require('iconv-lite');
 var md5 = require('md5');
 var fs = require('fs');
 var path = require('path');
+var url = require('url');
+var querystring = require('querystring');
 
 function logUser(id, name) {
     fs.createWriteStream(path.join(__dirname, '..', 'user.log'), {
@@ -90,6 +92,18 @@ const VALIDATE_CODE_URL = 'http://218.65.5.214:2001/jwweb/sys/ValidateCode.aspx'
 // 首页路由
 router.get('/', function(req, res, next) {
     var sessionCookie;
+    var query = url.parse(req.url).query;
+    var messageType = querystring.parse(query).message;
+    var message = '';
+
+    switch(messageType) {
+        case 'login_failed':
+            message = '你没有成功登录，请检查学号、密码以及验证码是否输入正确，注意密码为教务系统密码';
+            break;
+        default:
+            message = '';
+            break;
+    }
 
     sendRequest({
         method: 'GET',
@@ -101,7 +115,12 @@ router.get('/', function(req, res, next) {
     .on('over', function(htmlData) {
         var html = iconv.decode(htmlData, 'gbk');
         var VIEWSTATE = getViewStateField(html);
-        res.render('index', { sessionCookie: sessionCookie, captchaURI: '/captcha/' + sessionCookie, VIEWSTATE: VIEWSTATE });
+        res.render('index', { 
+            sessionCookie: sessionCookie, 
+            captchaURI: '/captcha/' + sessionCookie, 
+            VIEWSTATE: VIEWSTATE,
+            message: message 
+        });
     });
 });
 
@@ -151,12 +170,7 @@ router.post('/', function(req, res, next) {
                 logUser(result.id, result.name);
                 res.render('result', result);
             } else {
-                res.render('index', { 
-                    sessionCookie: form.session, 
-                    captchaURI: '/captcha/' + form.session, 
-                    VIEWSTATE: form.VIEWSTATE, 
-                    message: '你没有成功登录，请检查学号、密码以及验证码是否输入正确，注意密码为教务系统密码'
-                });
+                res.redirect('/?message=login_failed');
             }
         });
     });
