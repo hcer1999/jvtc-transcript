@@ -6,8 +6,6 @@ var iconv = require('iconv-lite');
 var md5 = require('md5');
 var fs = require('fs');
 var path = require('path');
-var url = require('url');
-var querystring = require('querystring');
 
 function logUser(id, name) {
     fs.createWriteStream(path.join(__dirname, '..', 'user.log'), {
@@ -92,8 +90,7 @@ const VALIDATE_CODE_URL = 'http://218.65.5.214:2001/jwweb/sys/ValidateCode.aspx'
 // 首页路由
 router.get('/', function(req, res, next) {
     var sessionCookie;
-    var query = url.parse(req.url).query;
-    var messageType = querystring.parse(query).message;
+    var messageType = req.query.message;
     var message = '';
 
     switch(messageType) {
