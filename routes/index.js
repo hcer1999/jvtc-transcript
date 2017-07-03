@@ -27,10 +27,19 @@ function getChkyzmString(captcha) {
     return md5(md5(captcha.toUpperCase()).substring(0,30).toUpperCase() + '11785').substring(0,30).toUpperCase();
 }
 
-function sendRequest(option) {
+function sendRequest(option, errCb) {
     var evObj = new EventEmitter();
     var wholeData = new Uint8Array(0);
-    request(option)
+    request(Object.assign({timeout: 6000}, option), function(err) {
+        if(err == null) {
+            return;
+        }
+        if(typeof errCb === 'function') {
+            errCb(err);
+        } else {
+            throw err;
+        }
+    })
     .on('data', function(data) {
         var tmp = new Uint8Array(wholeData.length + data.length);
         tmp.set(wholeData);
@@ -44,6 +53,10 @@ function sendRequest(option) {
         evObj.emit('response', response);
     });
     return evObj;
+}
+
+function handleRequestErrorMessage(err) {
+    err.message = '学校的教务系统官网挂了，暂时没法获取信息，请稍后刷新重试' + '（' + err.message + '）';
 }
 
 function isGetTranscriptSuccessfully(html) {
@@ -108,6 +121,9 @@ router.get('/', function(req, res, next) {
     sendRequest({
         method: 'GET',
         url: LOGIN_PAGE_URL
+    }, function(err) {
+        handleRequestErrorMessage(err);
+        next(err);    
     })
     .on('response', function(response) {
         sessionCookie = response.headers['set-cookie'][0];
@@ -144,6 +160,9 @@ router.post('/', function(req, res, next) {
             Cookie: form.session, 
             Referer: LOGIN_PAGE_URL
         }
+    }, function(err) {
+        handleRequestErrorMessage(err);
+        next(err);
     })
     .on('response', function() {
         // 获取成绩
@@ -158,6 +177,9 @@ router.post('/', function(req, res, next) {
                 Cookie: form.session, 
                 Referer: VIEW_SCORE_PAGE_URL
             }
+        }, function(err) {
+            handleRequestErrorMessage(err);
+            next(err);
         })
         .on('over', function(transcriptPageData) {
             var html = iconv.decode(transcriptPageData, 'gbk');
@@ -190,6 +212,8 @@ router.get('/captcha/:session', function(req, res, next) {
         headers: {
             Cookie: sessionCookie
         }
+    }, function(err) {
+        res.end();
     })
     .on('over', function(imageData) {
         res.end(new Buffer(imageData))
