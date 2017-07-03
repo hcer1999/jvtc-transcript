@@ -56,7 +56,7 @@ function sendRequest(option, errCb) {
 }
 
 function handleRequestErrorMessage(err) {
-    err.message = '学校的教务系统官网挂了，暂时没法获取信息，请稍后刷新重试' + '（' + err.message + '）';
+    err.message = '请求学校数据失败' + '（' + err.message + '）';
 }
 
 function isGetTranscriptSuccessfully(html) {
