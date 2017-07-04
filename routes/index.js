@@ -103,7 +103,7 @@ const VALIDATE_CODE_URL = 'http://218.65.5.214:2001/jwweb/sys/ValidateCode.aspx'
 // 首页路由
 router.get('/', function(req, res, next) {
     var sessionCookie;
-    var messageType = req.query.message;
+    var messageType = req.getEchoMessage();
     var message = '';
 
     switch(messageType) {
@@ -190,14 +190,16 @@ router.post('/', function(req, res, next) {
 
                 // 没有该学期成绩
                 if(result.transcript.length === 0) {
-                    res.redirect('/?message=no_record');
+                    res.setEchoMessage('no_record');
+                    res.redirect('/');
                 } else {                
                     // 记录用户信息
                     logUser(result.id, result.name);
                     res.render('result', result);
                 }
             } else {
-                res.redirect('/?message=login_failed');
+                res.setEchoMessage('login_failed');
+                res.redirect('/');
             }
         });
     });

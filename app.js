@@ -29,6 +29,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 回显消息中间件
+app.use(function(req, res, next) {
+  req.getEchoMessage = function(value) {
+    var message = req.cookies.echoMessage;
+    if(message) {
+      res.clearCookie('echoMessage');
+    }
+    return message;
+  }
+
+  res.setEchoMessage = function(value) {
+    res.cookie('echoMessage', value);
+  }
+
+  next();
+});
+
 app.use('/', index);
 
 // catch 404 and forward to error handler
