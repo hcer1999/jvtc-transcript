@@ -191,7 +191,7 @@ router.post('/', function(req, res, next) {
                 // 没有该学期成绩
                 if(result.transcript.length === 0) {
                     res.setEchoMessage('no_record');
-                    res.redirect('/');
+                    res.redirect(303, '/');
                 } else {                
                     // 记录用户信息
                     logUser(result.id, result.name);
@@ -199,7 +199,7 @@ router.post('/', function(req, res, next) {
                 }
             } else {
                 res.setEchoMessage('login_failed');
-                res.redirect('/');
+                res.redirect(303, '/');
             }
         });
     });
