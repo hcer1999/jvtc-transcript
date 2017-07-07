@@ -29,18 +29,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 回显消息中间件
+// 一次性消息中间件
 app.use(function(req, res, next) {
-  req.getEchoMessage = function(value) {
-    var message = req.cookies.echoMessage;
+  req.getEchoMessage = function() {
+    var message = req.cookies.messgae;
     if(message) {
-      res.clearCookie('echoMessage');
+      res.clearCookie('messgae');
     }
     return message;
   }
 
   res.setEchoMessage = function(value) {
-    res.cookie('echoMessage', value);
+    res.cookie('messgae', value);
   }
 
   next();
