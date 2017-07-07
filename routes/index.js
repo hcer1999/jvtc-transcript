@@ -23,7 +23,7 @@ router.get('/', function(req, res, next) {
     var message = req.getEchoMessage();
 
     jwweb.connect(function(err, uid) {
-        if(err) next(err);
+        if(err) return next(err);
         res.cookie('uid', uid);
         res.render('index', {message: message});
     });
@@ -39,7 +39,7 @@ router.post('/', function(req, res, next) {
         captcha: form.code
     }, 
     function(err, logined) {
-        if(err) next(err);
+        if(err) return next(err);
         if(logined) {
             res.redirect(303, '/transcript/' + form.date);
         } else {
@@ -54,7 +54,7 @@ router.get('/transcript/:date', function(req, res, next) {
     var date = req.params.date;
 
     jwweb.getResults(uid, date, function(err, result) {
-        if(err) next(err);
+        if(err) return next(err);
         if(result.transcript.length !== 0) {
             logUser(result.id, result.name, date);
         }
@@ -67,7 +67,7 @@ router.get('/captcha', function(req, res, next) {
     var uid = req.cookies.uid;
     
     jwweb.getCaptcha(uid, function(err, imgData) {
-        if(err) next(err);
+        if(err) return next(err);
         if(imgData instanceof Uint8Array) {
             res.end(Buffer.from(imgData));
         } else {
