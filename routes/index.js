@@ -9,7 +9,7 @@ function logUser(id, name, date) {
     logStr += new Date().toLocaleString('zh-CN');
     logStr += '  学号:' + id;
     logStr += '  姓名:' + name;
-    logStr += '  查询学年:' + date;
+    logStr += '  查询学期:' + date;
     logStr += '\r\n';
 
     fs.createWriteStream(path.join(__dirname, '..', 'user.log'), {
