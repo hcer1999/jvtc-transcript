@@ -52,15 +52,19 @@ router.post('/', function(req, res, next) {
 router.get('/transcript/:date', function(req, res, next) {
     var uid = req.cookies.uid;
     var date = req.params.date;
+    var message = '';
 
     jwweb.getResults(uid, date, function(err, result) {
         if(err) return next(err);
         if(result.transcript.length !== 0) {
             logUser(result.id, result.name, date);
+        } else {
+            message = '没有该学期的成绩，注意：2016-2017学年是指2016年9月到2017年9月';
         }
         res.render('result', {
             result: result,
-            date: date
+            date: date,
+            message: message
         });
     })
 });
