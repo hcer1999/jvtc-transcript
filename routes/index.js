@@ -58,7 +58,10 @@ router.get('/transcript/:date', function(req, res, next) {
         if(result.transcript.length !== 0) {
             logUser(result.id, result.name, date);
         }
-        res.render('result', result);
+        res.render('result', {
+            result: result,
+            date: date
+        });
     })
 });
 

@@ -17,7 +17,29 @@
 <body>
     <div class="container">
     <table class="table table-hover">
-        <caption><h1 class="text-center">成绩认定记录</h1></caption>
+        <caption>
+        <h1 class="text-center">成绩认定记录</h1>
+        <form>        
+            <div class="form-group">        
+                <div class="col-sm-10">
+                    <%- include('date-picker', typeof date !== 'undefined' ? {date: date} : {}) %>
+                </div>
+            </div>
+            <div class="form-group"> 
+                <div class="col-sm-2">
+                    <a id="query" href="" class="btn btn-info form-control">查询</a>
+                </div>
+            </div>
+
+            <script>
+                $(function() {
+                    $('#query').click(function() {
+                        this.href = $('#date-picker').val();
+                    });
+                });
+            </script>
+        </form>
+        </caption>
         <thead>
         <tr>
             <th>课程名称</th>
@@ -27,7 +49,7 @@
         </tr>
         </thead>
         <tbody>
-        <% for(let item of transcript) { %>
+        <% for(let item of result.transcript) { %>
         <tr>
             <td><%= item.name %></td>
             <td><%= item.credit %></td>
