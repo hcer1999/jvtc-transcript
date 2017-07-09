@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <%- include('head', {title: '查询结果'}); %>
+    <%- include('_partial/head', {title: '查询结果'}); %>
 
     <style>
         @media (max-width: 768px) {
@@ -29,7 +29,7 @@
         <form>        
             <div class="form-group">        
                 <div class="col-sm-10">
-                    <%- include('date-picker', typeof date !== 'undefined' ? {date: date} : {}) %>
+                    <%- include('_partial/date-picker', typeof date !== 'undefined' ? {date: date} : {}) %>
                 </div>
             </div>
             <div class="form-group"> 
