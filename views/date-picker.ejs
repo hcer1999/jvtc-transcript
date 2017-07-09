@@ -1,0 +1,44 @@
+<select id="date-picker" name="date" class="form-control">
+<option value="20150">2015-2016学年第一学期</option>
+<option value="20151">2015-2016学年第二学期</option>
+<option value="20160">2016-2017学年第一学期</option>
+<option value="20161">2016-2017学年第二学期</option>
+<option value="20170">2017-2018学年第一学期</option>
+<option value="20171">2017-2018学年第二学期</option>
+<option value="20180">2018-2019学年第一学期</option>
+<option value="20181">2018-2019学年第二学期</option>
+</select>
+
+<script>
+    (function() {
+        var nowDate = new Date();
+        var thisYear = nowDate.getFullYear();
+        var thisMonth = nowDate.getMonth();
+        var datePicker = document.getElementById('date-picker');
+
+        var optionHTML = [0, 1, 2, 3].map(function(value) {
+            var year = thisYear - value;
+            return '<option value="' + year + '0">' + year + '-' + (year + 1) + '学年第一学期</option>' +
+                '<option value="' + year + '1">' + year + '-' + (year + 1) + '学年第二学期</option>';
+        }).join('');
+
+        $(function() {
+            $(datePicker).html(optionHTML);
+
+            <% if(typeof date === 'undefined' || !date) { %>
+                if(thisMonth >=0 && thisMonth < 4) {
+                    datePicker.children[2].selected = true;
+                } else if(thisMonth >= 4 && thisMonth < 10) {
+                    datePicker.children[3].selected = true;
+                } else if(thisMonth >= 10 && thisMonth < 12) {
+                    datePicker.children[0].selected = true;
+                }
+            <% }else{ %>
+                var selectOption = [].slice.call(datePicker.children).filter(function(el){return el.value === '<%= date %>'});
+                if(selectOption.length > 0) {
+                    selectOption[0].selected = true;
+                }
+            <% } %>
+        });
+    })();
+</script>
