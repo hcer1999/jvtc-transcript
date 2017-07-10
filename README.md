@@ -21,10 +21,19 @@ Linux:
 
 程序默认监听`3050`端口，现在可以访问 <http://localhost:3050/> 使用查询系统。
 
+通过设置`PORT`环境变量可以修改监听端口号。
+
 ### Linux下后台运行
 1. SSH登录远程主机
 2. 在程序目录下执行 `nohup npm start > node.out 2>&1 &`
 3. 退出SSH
+
+## 日志
+
+access.log：HTTP访问日志
+
+user.log：记录查询者的姓名、学号及查询时间等
+
 
 ## ~~演示~~地址
 
