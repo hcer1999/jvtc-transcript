@@ -39,9 +39,14 @@
             </div>  
 
             <script>
-                $(function() {
-                    $('#query').click(function() {
-                        this.href = $('#date-picker').val();
+                document.addEventListener('DOMContentLoaded', function() {
+                    var queryBtn = document.getElementById('query');
+                    var dataPicker = document.getElementById('date-picker');
+
+                    if(!queryBtn || !dataPicker) return;
+
+                    queryBtn.addEventListener('click', function() {
+                        this.href = dataPicker.value;
                     });
                 });
             </script>

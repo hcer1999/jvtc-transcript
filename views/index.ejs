@@ -35,9 +35,10 @@
                 <!-- 验证码 -->
                 <img id="captcha" src="/captcha" alt="点击更换验证码" title="点击更换验证码">
                 <script>
-                    $(function() {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var captcha = document.getElementById('captcha');
                         var lastClickTime;
-                        $('#captcha').on('click', function() {
+                        captcha.addEventListener('click', function() {
                             lastClickTime = lastClickTime || new Date() - 1000;
                             if(new Date() - lastClickTime < 600) return;
                             lastClickTime = +new Date();

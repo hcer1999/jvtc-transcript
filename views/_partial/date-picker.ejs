@@ -22,8 +22,8 @@
                 '<option value="' + year + '1">' + year + '-' + (year + 1) + '学年第二学期</option>';
         }).join('');
 
-        $(function() {
-            $(datePicker).html(optionHTML);
+        document.addEventListener('DOMContentLoaded', function() {
+            datePicker.innerHTML = optionHTML;
 
             <% if(typeof date === 'undefined' || !date) { %>
                 if(thisMonth >=0 && thisMonth < 4) {
