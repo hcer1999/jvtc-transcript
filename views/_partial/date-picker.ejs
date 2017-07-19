@@ -25,6 +25,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             datePicker.innerHTML = optionHTML;
 
+            // 解决IE9下innerHTML无法在<select>元素下正常工作的问题：https://support.microsoft.com/zh-cn/help/276228/bug-internet-explorer-fails-to-set-the-innerhtml-property-of-the-selec
+            if(datePicker.children.length === 0) {
+                datePicker.outerHTML = '<select id="date-picker" name="date" class="form-control">' + optionHTML + '</select>';
+                datePicker = document.getElementById('date-picker');
+            }
+
             <% if(typeof date === 'undefined' || !date) { %>
                 if(thisMonth >=0 && thisMonth < 4) {
                     datePicker.children[2].selected = true;
