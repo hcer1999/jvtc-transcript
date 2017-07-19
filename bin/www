@@ -8,6 +8,9 @@ var app = require('../app');
 var debug = require('debug')('scource:server');
 var http = require('http');
 
+// 使反向代理能显示客户真实IP
+app.set('trust proxy', true);
+
 /**
  * Get port from environment and store in Express.
  */
