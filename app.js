@@ -62,9 +62,41 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  if(req.app.get('env') === 'development') {    
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
+    return;
+  }
+
+  let message = '';
+  switch(err.message) {
+    case 'Not Found':
+      message = '你访问了一个根本不存在的页面，我们将你带回了主页';
+      break;
+    case 'Data incomplete':
+      message = '学校教务系统没有给我们分配一个会话，天知道发生了什么';
+      break;
+    case 'UID not exist':
+      message = '你的会话已过期，当你访问首页时会开始一个新的会话，这个会话保质期为五分钟。所以请不要尝试将查询结果页面保存到书签中（应该保存主页）';
+      break;
+    case 'Unexpected page':
+      message = '学校教务系统返回了一些我们预料之外的数据，我们不知道接下来该做什么，所以决定将你带回主页。如果你持续看到这个消息，应该考虑联系作者';
+      break;
+  }
+  
+  if(message !== '') {
+    res.setEchoMessage(message);
+    res.redirect(303, '/');
+  } else {
+    let description = '';
+    switch(err.message) {
+      case 'ETIMEDOUT':
+        description = '与学校教务系统服务器连接超时，可能是学校教务系统暂时无法访问，请稍后再试';
+    }
+    res.status(err.status || 500);
+    res.render('error', {description: description});
+  }
 });
 
 module.exports = app;
