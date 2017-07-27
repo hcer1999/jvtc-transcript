@@ -61,6 +61,7 @@ router.get('/transcript/:date', function(req, res, next) {
         } else {
             message = '没有该学期的成绩，注意：2016-2017学年是指2016年9月到2017年9月';
         }
+        res.set('Cache-Control', 'no-cache');        
         res.render('result', {
             result: result,
             date: date,
@@ -75,6 +76,7 @@ router.get('/captcha', function(req, res, next) {
     
     jwweb.getCaptcha(uid, function(err, imgData) {
         if(err) return next(err);
+        res.set('Cache-Control', 'no-cache');
         if(imgData instanceof Uint8Array) {
             res.end(Buffer.from(imgData));
         } else {
