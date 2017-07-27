@@ -11,35 +11,43 @@
 
 <script>
     (function() {
-        var nowDate = new Date();
-        var thisYear = nowDate.getFullYear();
-        var thisMonth = nowDate.getMonth();
+        var thisYear = new Date().getFullYear();
+        var thisMonth = new Date().getMonth();
         var datePicker = document.getElementById('date-picker');
+        var createOption = function(a, b) {
+            var option = document.createElement('option');
+            var text = document.createTextNode(a + '-' + (parseInt(a) + 1) + '学年第' + ['一','二'][b] + '学期');
+            option.appendChild(text);
+            option.setAttribute('value', '' + a + b);
+            return option;
+        }
 
-        var optionHTML = [0, 1, 2, 3].map(function(value) {
-            var year = thisYear - value;
-            return '<option value="' + year + '0">' + year + '-' + (year + 1) + '学年第一学期</option>' +
-                '<option value="' + year + '1">' + year + '-' + (year + 1) + '学年第二学期</option>';
-        }).join('');
+        var options = [
+            createOption(thisYear - 2, 1),
+            createOption(thisYear - 2, 0),
+            createOption(thisYear - 3, 1),
+            createOption(thisYear - 3, 0),
+            createOption(thisYear - 4, 1),
+            createOption(thisYear - 4, 0)
+        ];
+
+        if(thisMonth >= 0) {    // 一月起
+            options.unshift(createOption(thisYear - 1, 0));
+        }
+        if(thisMonth >= 4) {    // 五月起
+            options.unshift(createOption(thisYear - 1, 1));
+        }
+        if(thisMonth >= 10) {   // 十一月起
+            options.unshift(createOption(thisYear, 0));
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            datePicker.innerHTML = optionHTML;
+            datePicker.innerHTML = '';
+            options.forEach(function(el) {
+                datePicker.appendChild(el);
+            });
 
-            // 解决IE9下innerHTML无法在<select>元素下正常工作的问题：https://support.microsoft.com/zh-cn/help/276228/bug-internet-explorer-fails-to-set-the-innerhtml-property-of-the-selec
-            if(datePicker.children.length === 0) {
-                datePicker.outerHTML = '<select id="date-picker" name="date" class="form-control">' + optionHTML + '</select>';
-                datePicker = document.getElementById('date-picker');
-            }
-
-            <% if(typeof date === 'undefined' || !date) { %>
-                if(thisMonth >=0 && thisMonth < 4) {
-                    datePicker.children[2].selected = true;
-                } else if(thisMonth >= 4 && thisMonth < 10) {
-                    datePicker.children[3].selected = true;
-                } else if(thisMonth >= 10 && thisMonth < 12) {
-                    datePicker.children[0].selected = true;
-                }
-            <% }else{ %>
+            <% if(typeof date !== 'undefined' && date) { %>
                 var selectOption = [].slice.call(datePicker.children).filter(function(el){return el.value === '<%= date %>'});
                 if(selectOption.length > 0) {
                     selectOption[0].selected = true;
