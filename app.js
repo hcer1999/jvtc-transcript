@@ -75,7 +75,7 @@ app.use(function(err, req, res, next) {
       message = '你访问了一个根本不存在的页面，我们将你带回了主页';
       break;
     case 'Data incomplete':
-      message = '学校教务系统没有给我们分配一个会话，天知道发生了什么';
+      message = '学校教务系统返回的数据不完整，我们无法解析。出现这个问题可能是由于我们或学校的服务器网络情况不太好';
       break;
     case 'UID not exist':
       message = '你的会话已过期，当你访问首页时会开始一个新的会话，这个会话保质期为五分钟。所以请不要尝试将查询结果页面保存到书签中（应该保存主页）';
