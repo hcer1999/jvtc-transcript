@@ -92,7 +92,8 @@ app.use(function(err, req, res, next) {
     let description = '';
     switch(err.message) {
       case 'ETIMEDOUT':
-        description = '与学校教务系统服务器连接超时，可能是学校教务系统暂时无法访问，请稍后再试';
+      case 'ESOCKETTIMEDOUT':
+        description = '与学校教务系统服务器连接超时，可能是学校教务系统暂时无法访问（你懂的，学校网站经常挂），请稍后再试';
     }
     res.status(err.status || 500);
     res.render('error', {description: description});
