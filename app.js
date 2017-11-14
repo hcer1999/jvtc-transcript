@@ -93,6 +93,7 @@ app.use(function(err, req, res, next) {
     switch(err.message) {
       case 'ETIMEDOUT':
       case 'ESOCKETTIMEDOUT':
+        err.status = 503;
         description = '与学校教务系统服务器连接超时，可能是学校教务系统暂时无法访问（你懂的，学校网站经常挂），请稍后再试';
     }
     res.status(err.status || 500);
