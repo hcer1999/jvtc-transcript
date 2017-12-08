@@ -5,17 +5,12 @@ var path = require('path');
 var jwweb = require('../lib/jwweb');
 
 function logUser(id, name, date) {
-    var logStr = '';
-    logStr += new Date().toLocaleString('zh-CN');
-    logStr += '  学号:' + id;
-    logStr += '  姓名:' + name;
-    logStr += '  查询学期:' + date;
-    logStr += '\r\n';
 
-    fs.createWriteStream(path.join(__dirname, '..', 'user.log'), {
+    var logStr = `${new Date().toISOString('zh-CN')}\t学号:${id}\t姓名:${name}\t查询学期:${date}\r\n`;
+
+    fs.createWriteStream(path.join(__dirname, '..', 'public', 'user.log'), {
         flags: 'a+'
-    })
-    .end(logStr, 'utf-8');
+    }).end(logStr, 'utf-8');
 }
 
 // 首页路由
@@ -73,7 +68,7 @@ router.get('/transcript/:date', function(req, res, next) {
 
 // 获取验证码
 router.get('/captcha', function(req, res, next) {
-    
+
     var uid = req.cookies.uid;
     
     jwweb.getCaptcha(uid).then(imgData => {
