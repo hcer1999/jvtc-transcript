@@ -77,7 +77,7 @@ router.get('/captcha', function(req, res, next) {
     jwweb.getCaptcha(uid, function(err, imgData) {
         if(err) return next(err);
         res.set('Cache-Control', 'no-cache');
-        res.end(Buffer.from(imgData));
+        res.end(imgData);
     })
 });
 
