@@ -37,7 +37,7 @@ router.post('/', function(req, res, next) {
         if(logined) {
             res.redirect(303, '/transcript/' + form.date);
         } else {
-            throw new Error('Login failed');
+            throw new Error('Login Failed');
         }
     }).catch(err => next(err));
 });
@@ -53,10 +53,11 @@ router.get('/transcript/:date', function(req, res, next) {
         if(result.transcript.length !== 0) {
             logUser(result.id, result.name, date);
         } else {
-            message = '没有该学期的成绩，注意：2016-2017学年是指2016年9月到2017年9月';
+            let year = new Date().getFullYear();
+            message = `没有该学期的成绩，注意：${year}-${year + 1}学年是指${year}年9月到${year + 1}年7月的学年`;
         }
 
-        res.set('Cache-Control', 'no-cache');        
+        res.set('Cache-Control', 'no-cache');
         res.render('result', {
             result: result,
             date: date,
