@@ -37,8 +37,7 @@ router.post('/', function(req, res, next) {
         if(logined) {
             res.redirect(303, '/transcript/' + form.date);
         } else {
-            res.setEchoMessage('你没有成功登录，请检查学号、密码以及验证码是否输入正确，注意密码为教务系统密码');
-            res.redirect(303, '/');
+            throw new Error('Login failed');
         }
     }).catch(err => next(err));
 });
