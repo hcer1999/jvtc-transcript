@@ -58,8 +58,8 @@
                             if(new Date() - lastClickTime < 600) return;
                             lastClickTime = +new Date();
                             this.src = '/captcha?' + parseInt(Math.random() * 10000);
-                        })
-                    })
+                        });
+                    });
                 </script>
             </div>
         </div>
@@ -98,7 +98,7 @@
                     clearInterval(handle);
                 }
             }, 500);
-        })()
+        })();
     </script>
 </body>
 </html>
