@@ -7,9 +7,11 @@
 ## 部署
 
 ### 安装依赖项
+
 > npm install
 
 ### 设置生产环境
+
 Windows PowerShell:
 > $env:NODE_ENV = "production"
 
@@ -17,16 +19,16 @@ Linux:
 > export NODE_ENV=production
 
 ### 运行程序
+
 > npm start
 
 程序默认监听`3050`端口，现在可以访问 <http://localhost:3050/> 使用查询系统。
 
 通过设置`PORT`环境变量可以修改监听端口号。
 
-### Linux下后台运行
-1. SSH登录远程主机
-2. 在程序目录下执行 `nohup npm start > node.out 2>&1 &`
-3. 退出SSH
+### 持久运行
+
+请使用[forever](https://github.com/foreverjs/forever)、[pm2](https://github.com/Unitech/pm2)等持续运行工具部署程序
 
 ## 日志
 
