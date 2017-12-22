@@ -37,6 +37,6 @@ access.log：HTTP访问日志
 user.log：记录查询者的姓名、学号及查询时间等
 
 
-## ~~演示~~地址
+## 网站
 
-<http://cj.choclatl.com/>
+<https://cj.choclatl.com/>
