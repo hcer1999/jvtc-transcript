@@ -1,58 +1,43 @@
+<%
+    var thisYear = new Date().getFullYear();
+    var thisMonth = new Date().getMonth();
+
+    var createOption = (a, b) => `<option value="${'' + a + b}">${a}-${parseInt(a) + 1}学年第${['一','二'][b]}学期</option>`;
+
+    var options = [
+        createOption(thisYear - 2, 1),
+        createOption(thisYear - 2, 0),
+        createOption(thisYear - 3, 1),
+        createOption(thisYear - 3, 0),
+        createOption(thisYear - 4, 1),
+        createOption(thisYear - 4, 0)
+    ];
+
+    if(thisMonth >= 0) {    // 一月起
+        options.unshift(createOption(thisYear - 1, 0));
+    }
+    if(thisMonth >= 4) {    // 五月起
+        options.unshift(createOption(thisYear - 1, 1));
+    }
+    if(thisMonth >= 10) {   // 十一月起
+        options.unshift(createOption(thisYear, 0));
+    }
+%>
+
 <select id="date-picker" name="date" class="form-control">
-<option value="20150">2015-2016学年第一学期</option>
-<option value="20151">2015-2016学年第二学期</option>
-<option value="20160">2016-2017学年第一学期</option>
-<option value="20161">2016-2017学年第二学期</option>
-<option value="20170">2017-2018学年第一学期</option>
-<option value="20171">2017-2018学年第二学期</option>
-<option value="20180">2018-2019学年第一学期</option>
-<option value="20181">2018-2019学年第二学期</option>
+    <%- options.join('') %>
 </select>
 
+<%# 在成绩单页面时，使学期选择器默认选中当前查询的学期项。date为render的传入变量 %>
+<% if(typeof date !== 'undefined' && date) { %>
 <script>
     (function() {
-        var thisYear = new Date().getFullYear();
-        var thisMonth = new Date().getMonth();
-        var datePicker = document.getElementById('date-picker');
-        var createOption = function(a, b) {
-            var option = document.createElement('option');
-            var text = document.createTextNode(a + '-' + (parseInt(a) + 1) + '学年第' + ['一','二'][b] + '学期');
-            option.appendChild(text);
-            option.setAttribute('value', '' + a + b);
-            return option;
-        }
-
-        var options = [
-            createOption(thisYear - 2, 1),
-            createOption(thisYear - 2, 0),
-            createOption(thisYear - 3, 1),
-            createOption(thisYear - 3, 0),
-            createOption(thisYear - 4, 1),
-            createOption(thisYear - 4, 0)
-        ];
-
-        if(thisMonth >= 0) {    // 一月起
-            options.unshift(createOption(thisYear - 1, 0));
-        }
-        if(thisMonth >= 4) {    // 五月起
-            options.unshift(createOption(thisYear - 1, 1));
-        }
-        if(thisMonth >= 10) {   // 十一月起
-            options.unshift(createOption(thisYear, 0));
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            datePicker.innerHTML = '';
-            options.forEach(function(el) {
-                datePicker.appendChild(el);
-            });
-
-            <% if(typeof date !== 'undefined' && date) { %>
-                var selectOption = [].slice.call(datePicker.children).filter(function(el){return el.value === '<%= date %>'});
-                if(selectOption.length > 0) {
-                    selectOption[0].selected = true;
-                }
-            <% } %>
+            var selectOption = [].slice.call(document.getElementById('date-picker').children).filter(function(el){return el.value === '<%= date %>'});
+            if(selectOption.length > 0) {
+                selectOption[0].selected = true;
+            }
         });
     })();
 </script>
+<% } %>    
