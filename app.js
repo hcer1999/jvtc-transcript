@@ -79,9 +79,19 @@ app.use(function(err, req, res, next) {
     var message = messageTrans[err.message];
 
     if(message) {
+
         res.setEchoMessage(message);
+
+        // 返回主页
         res.redirect(303, '/');
+
     } else {
+
+        // 这里处理 messageTrans 中列出的错误信息以外的情况
+        // 由于请求主页会对教务系统服务器发出请求，所以有些情况下不能直接跳转到首页显示错误信息
+        // 比如与学校服务器连接超时，这时如果跳转到首页显示错误消息，可能出现死循环
+        // 所以对于 messageTrans 中列出的错误信息以外的情况，应该渲染错误页面，防止造成意外情况
+
         res.locals.message = err.message;
         res.locals.error = {};
 
@@ -92,6 +102,8 @@ app.use(function(err, req, res, next) {
         }
 
         res.status(err.status || 500);
+
+        // 渲染错误页
         res.render('error', {description: description});
     }
 });
