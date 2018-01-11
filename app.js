@@ -76,12 +76,15 @@ app.use(function(err, req, res, next) {
         'Login Failed'   : '登录失败，请检查学号、密码及验证码是否输入正确，注意需要使用教务系统密码而非学工系统密码'
     }
 
-    var message = messageTrans[err.message] || err.message;
+    var message = messageTrans[err.message];
 
-    if (message !== '') {
+    if(message) {
         res.setEchoMessage(message);
         res.redirect(303, '/');
     } else {
+        res.locals.message = err.message;
+        res.locals.error = {};
+
         let description = '';
         if(err.message === 'ETIMEDOUT' || err.message === 'ESOCKETTIMEDOUT') {
             err.status = 503;
@@ -89,7 +92,7 @@ app.use(function(err, req, res, next) {
         }
 
         res.status(err.status || 500);
-        res.render('error', {description: description || err.message});
+        res.render('error', {description: description});
     }
 });
 
