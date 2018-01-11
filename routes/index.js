@@ -54,7 +54,7 @@ router.get('/transcript/:date', function(req, res, next) {
             logUser(result.id, result.name, date);
         } else {
             let year = new Date().getFullYear();
-            message = `没有该学期的成绩，注意：${year}-${year + 1}学年是指${year}年9月到${year + 1}年7月的学年`;
+            message = `没有该学期的成绩，注意：${year - 1}-${year}学年是指${year - 1}年9月到${year}年7月的学年`;
         }
 
         res.set('Cache-Control', 'no-cache');
