@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <img id="captcha">
+    <canvas id="result"></canvas>
+    <button id="refresh">换一个</button>
+
+    <p>
+        <label for="load">导入数据：</label>
+        <input id="load" type="file">
+    </p>
+
+    <p>
+        <button id="save">导出数据</button>
+    </p>
+
+    <div class="char">
+        <canvas></canvas>
+        <input type="text" maxlength="1">
+        <button>确认</button>
+    </div>
+
+    <div class="char">
+        <canvas></canvas>
+        <input type="text" maxlength="1">
+        <button>确认</button>
+    </div>
+
+    <div class="char">
+        <canvas></canvas>
+        <input type="text" maxlength="1">
+        <button>确认</button>
+    </div>
+
+    <div class="char">
+        <canvas></canvas>
+        <input type="text" maxlength="1">
+        <button>确认</button>
+    </div>
+
+    <script src="Captcha.js"></script>
+    <script src="Recognizer.js"></script>
+
+    <script>
+
+        let recognizer = new Recognizer();
+
+        // 导入数据按钮
+        document.getElementById('load').onchange = function() {
+            let fileReader = new FileReader();
+            fileReader.readAsText(this.files[0]);
+            fileReader.onload = function(){
+                for(let {char, sampleVal} of JSON.parse(this.result)) {
+                    recognizer.addSampleData(char, sampleVal);
+                }
+                alert('数据已导入');
+            };
+        }
+
+        // 导出数据按钮
+        document.getElementById('save').onclick = function() {
+            let blob = new Blob([JSON.stringify(recognizer.getSampleData())]);
+            window.open(URL.createObjectURL(blob));
+        }
+
+        function changeCaptcha() {
+            document.getElementById('captcha').src = 'captcha.jpg?' + Math.random();
+            document.querySelectorAll('button').forEach(e => e.disabled = false);
+            document.querySelectorAll('input[type=text]').forEach(e => e.value = '');
+        }
+
+        // 更换验证码按钮
+        document.getElementById('refresh').onclick = changeCaptcha;
+
+        changeCaptcha();
+
+        // 验证码被加载
+        document.getElementById('captcha').onload = function() {
+
+            let imgData = getImageData(this);
+            let captcha = new Captcha(imgData);
+
+            // 处理验证码
+            captcha.dispose();
+
+            // 显示处理后的完整验证码
+            let result = document.getElementById('result');
+            result.width = captcha.width;
+            result.height = captcha.height;
+            result.getContext('2d').putImageData(captcha.getImageData(), 0, 0);
+
+            // 获取验证码中切割出的字符图形数据
+            let slicedChars = captcha.sliceCharacter();
+
+            // 跳过切割的字符数不为4的验证码(存在粘连字符)
+            if(slicedChars.length !== 4) {
+                changeCaptcha();
+                console.log('跳过了一个字符存在粘连的验证码');
+            }
+
+            // 绘制切割出的字符图像数据
+            for(let i = 0; i < slicedChars.length; i++) {
+                let charImageData = slicedChars[i]
+                let charBox = document.querySelectorAll('.char')[i];
+                let canvas = charBox.querySelector('canvas');
+                let input = charBox.querySelector('input');
+                let button = charBox.querySelector('button');
+
+                // 将切割出的字符尺寸调整为24*24
+                let normalImageData = resizeImageData(charImageData, 24, 24);
+
+                canvas.width = normalImageData.width;
+                canvas.height = normalImageData.height;
+                canvas.getContext('2d').putImageData(normalImageData, 0, 0);
+                
+                let normalCaptcha = new Captcha(normalImageData);
+
+                // 点击显示单个字符的canvas时显示识别结果
+                canvas.onclick = function() {
+                    normalCaptcha.print();
+                    let matchedChar = recognizer.matchSample(normalCaptcha.getSampleString());
+                    console.log('识别结果：', matchedChar);
+                }
+
+                // 点击确认按钮将样本数据添加到recognizer
+                button.onclick = function() {
+                    if(input.value.length === 1) {
+                        recognizer.addSampleData(input.value, normalCaptcha.getSampleString());
+                        button.disabled = true;
+                        countLog();
+                    }
+
+                    // 显示每个字符的样本数量
+                    function countLog() {
+                        let o = {};
+                        for(let {char, sampleVal} of recognizer.getSampleData()) {
+                            o[char] = o[char] ? o[char] + 1 : 1;
+                        }
+                        console.log('样本统计：', o);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
