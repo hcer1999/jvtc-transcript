@@ -37,6 +37,14 @@ access.log：HTTP访问日志
 user.log：记录查询者的姓名、学号及查询时间等
 
 
+## 自动填写验证码（2018/1/17新增
+
+现在登录页在较新的浏览器上会自动识别并填写验证码
+
+相关代码在`recognizer`分支中：https://github.com/Chocolatl/jvtc-transcript/tree/recognizer
+
+当修改验证码识别相关功能时，应该在`recognizer`分支修改代码，再复制到`master`分支中
+
 ## 网站
 
 <https://cj.choclatl.com/>
