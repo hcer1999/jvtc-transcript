@@ -106,23 +106,33 @@
     <script src="javascripts/Recognizer.js"></script>
     <script src="javascripts/sample-data.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let recognizer = new Recognizer();
-            
-            // 加载样本数据
-            for(let {char, sampleVal} of window['sample-data']) {
-                recognizer.addSampleData(char, sampleVal);
-            }
-    
-            document.getElementById('captcha').onload = function() {
-                let result = recognize(this, recognizer);
-                if(typeof result !== 'string') {
-                    document.getElementById('captcha').src = '/captcha?' + parseInt(Math.random() * 10000);
-                } else {
-                    document.getElementById('code').value = result;
+        
+        let recognizer = new Recognizer();
+        
+        // 加载样本数据
+        for(let {char, sampleVal} of window['sample-data']) {
+            recognizer.addSampleData(char, sampleVal);
+        }
+
+        (function initCaptchaRec() {
+            let captcha = document.getElementById('captcha');
+            if(captcha.complete === true || (captcha.complete === undefined && captcha.width !== 0)) {
+
+                fillCaptcha();
+                captcha.onload = fillCaptcha;
+
+                function fillCaptcha() {
+                    let result = recognize(captcha, recognizer);
+                    if(typeof result !== 'string') {
+                        captcha.src = '/captcha?' + parseInt(Math.random() * 10000);
+                    } else {
+                        document.getElementById('code').value = result;
+                    }
                 }
+            } else {
+                setTimeout(initCaptchaRec, 40);
             }
-        });
+        })();
 
         function recognize(img, recognizer) {
             var imgData = getImageData(img);
