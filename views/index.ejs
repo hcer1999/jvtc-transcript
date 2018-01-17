@@ -100,5 +100,67 @@
             }, 500);
         })();
     </script>
+
+    <!-- 自动填写验证码相关代码 -->
+    <script src="javascripts/Captcha.js"></script>
+    <script src="javascripts/Recognizer.js"></script>
+    <script src="javascripts/sample-data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let recognizer = new Recognizer();
+            
+            // 加载样本数据
+            for(let {char, sampleVal} of window['sample-data']) {
+                recognizer.addSampleData(char, sampleVal);
+            }
+    
+            document.getElementById('captcha').onload = function() {
+                let result = recognize(this, recognizer);
+                if(typeof result !== 'string') {
+                    document.getElementById('captcha').src = '/captcha?' + parseInt(Math.random() * 10000);
+                } else {
+                    document.getElementById('code').value = result;
+                }
+            }
+        });
+
+        function recognize(img, recognizer) {
+            var imgData = getImageData(img);
+            var captcha = new Captcha(imgData);
+
+            // 处理验证码
+            captcha.dispose();
+
+            // 获取验证码中切割出的字符图形数据
+            var slicedChars = captcha.sliceCharacter();
+
+            // 不识别字符数不为4的验证码(存在粘连字符)
+            if (slicedChars.length !== 4) {
+                return null;
+            }
+
+            var chars = [];
+            // 绘制切割出的字符图像数据
+            for (var i = 0; i < slicedChars.length; i++) {
+                var charImageData = slicedChars[i];
+
+                // 将切割出的字符尺寸调整为24*24
+                var normalImageData = resizeImageData(charImageData, 24, 24);
+
+                // 使用切割出的字符图像创建Captcha实例
+                var normalCaptcha = new Captcha(normalImageData);
+
+                // 获取特征字符串
+                var sampleString = normalCaptcha.getSampleString();
+
+                // 根据特征字符串识别
+                var matchedChar = recognizer.matchSample(sampleString);
+
+                chars.push(matchedChar);
+            }
+
+            return chars.join('');
+        }
+    </script>
 </body>
 </html>
