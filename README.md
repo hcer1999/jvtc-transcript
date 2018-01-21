@@ -36,7 +36,7 @@ Linux:
 
 access.log：HTTP访问日志
 
-user.log：记录查询者的姓名、学号及查询时间等
+public/user.log：记录查询者的姓名、学号及查询时间等
 
 
 ## 自动填写验证码（2018/1/17新增
