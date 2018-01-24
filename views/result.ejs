@@ -38,7 +38,10 @@
             <script>
                 window.onload = function() {
                     document.getElementById('query').onclick = function() {
-                        location.href = document.getElementById('date-picker').value;
+                        var term = document.getElementById('date-picker').value;
+                        if(/.*\/(.*)$/.exec(location.href)[1] !== term) {
+                            location.href = term;
+                        }
                         return false;
                     }
                 }
