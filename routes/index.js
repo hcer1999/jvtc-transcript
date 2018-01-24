@@ -16,6 +16,9 @@ function logUser(id, name, date) {
 // 首页路由
 router.get('/', function(req, res, next) {
 
+    var uid = req.cookies.uid;
+    uid && jwweb.logout(uid);
+    
     var message = req.getEchoMessage();
 
     jwweb.connect().then(uid => {
