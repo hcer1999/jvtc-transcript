@@ -60,7 +60,8 @@ router.get('/transcript/:date', function(req, res, next) {
             message = `没有该学期的成绩，注意：${year - 1}-${year}学年是指${year - 1}年9月到${year}年7月的学年`;
         }
 
-        res.set('Cache-Control', 'no-cache');
+        // 三分钟内重复查询直接使用浏览器缓存结果
+        res.set('Cache-Control', 'max-age=180');
         res.render('result', {
             result: result,
             date: date,
