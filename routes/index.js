@@ -38,14 +38,14 @@ router.post('/', function(req, res, next) {
         captcha: form.code
     }).then(logined => {
         if(logined) {
-            res.redirect(303, '/transcript/' + form.date);
+            res.redirect(303, `/transcript/${form.stuId}/${form.date}`);
         } else {
             throw new Error('Login Failed');
         }
     }).catch(err => next(err));
 });
 
-router.get('/transcript/:date', function(req, res, next) {
+router.get('/transcript/:id/:date', function(req, res, next) {
 
     var uid = req.cookies.uid;
     var date = req.params.date;
