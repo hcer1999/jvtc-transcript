@@ -28,21 +28,21 @@
 
         <form class="form-horizontal" method="POST" action="/">
         <div class="form-group">
-            <label for="stuId" class="col-sm-2 control-label">学号</label>
+            <label for="userid-input" class="col-sm-2 control-label">学号</label>
             <div class="col-sm-9">
-            <input type="text" name="stuId" class="form-control" id="stuId" placeholder="学号" required>
+            <input type="text" name="userid" class="form-control" id="userid-input" placeholder="学号" required>
             </div>
         </div>
         <div class="form-group">
-            <label for="stuPwd" class="col-sm-2 control-label">密码</label>
+            <label for="password-input" class="col-sm-2 control-label">密码</label>
             <div class="col-sm-9">
-            <input type="password" name="stuPwd" class="form-control" id="stuPwd" placeholder="教务系统密码" required>
+            <input type="password" name="password" class="form-control" id="password-input" placeholder="教务系统密码" required>
             </div>
         </div>
         <div class="form-group">
-            <label for="code" class="col-sm-2 control-label">验证码</label>
+            <label for="captcha-input" class="col-sm-2 control-label">验证码</label>
             <div class="col-sm-9">
-            <input type="text" name="code" class="form-control" id="code" placeholder="验证码" required autocomplete="off">
+            <input type="text" name="captcha" class="form-control" id="captcha-input" placeholder="验证码" required autocomplete="off">
             </div>
         </div>
         <div class="form-group">
@@ -125,7 +125,7 @@
                     if(typeof result !== 'string') {
                         captcha.src = '/captcha?' + parseInt(Math.random() * 10000);
                     } else {
-                        document.getElementById('code').value = result;
+                        document.getElementById('captcha-input').value = result;
                     }
                 }
             } else {

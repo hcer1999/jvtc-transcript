@@ -41,15 +41,9 @@ router.post('/', function(req, res, next) {
     if(!req.user) throw new Error('UID Not Exist');
     
     let form = req.body;
-    let info = {
-        userid: form.stuId, 
-        password: form.stuPwd, 
-        captcha: form.code
-    }
-
-    req.user.login(info).then(logined => {
+    req.user.login(form).then(logined => {
         if(!logined) throw new Error('Login Failed');
-        res.redirect(303, `/transcript/${form.stuId}/${form.semester}`);
+        res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
     }).catch(next);
 });
 
