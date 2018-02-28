@@ -2,7 +2,7 @@
     var thisYear = new Date().getFullYear();
     var thisMonth = new Date().getMonth();
 
-    var createOption = (a, b) => `<option value="${a}${b}" ${date == '' + a + b ? 'selected' : ''}>${a}-${+a + 1}学年第${['一','二'][b]}学期</option>`;
+    var createOption = (a, b) => `<option value="${a}${b}" ${semester == '' + a + b ? 'selected' : ''}>${a}-${+a + 1}学年第${['一','二'][b]}学期</option>`;
 
     var options = [
         createOption(thisYear - 2, 1),
@@ -24,6 +24,6 @@
     }
 %>
 
-<select id="date-picker" name="date" class="form-control">
+<select id="semester-picker" name="semester" class="form-control">
     <%- options.join('') %>
 </select>
