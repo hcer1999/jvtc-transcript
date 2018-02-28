@@ -1,16 +1,16 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var compression = require('compression');
-var zlib = require('zlib');
-var fs = require('fs');
+const express = require('express');
+const path = require('path');
+const favicon = require('serve-favicon');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const compression = require('compression');
+const zlib = require('zlib');
+const fs = require('fs');
 
-var index = require('./routes/index');
+const index = require('./routes/index');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
 
     req.getEchoMessage = function () {
-        var message = req.cookies.messgae;
+        let message = req.cookies.messgae;
         if (message) {
             res.clearCookie('messgae');
         }
@@ -57,7 +57,7 @@ app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
@@ -68,7 +68,7 @@ app.use(function(err, req, res, next) {
         return next(err);
     }
 
-    var messageTrans = {
+    let messageTrans = {
         'Not Found'      : '你访问了一个根本不存在的页面，我们将你带回了主页',
         'Data Incomplete': '学校教务系统返回的数据不完整，无法正常解析',
         'UID Not Exist'  : '你的会话已过期，请重新登录',
@@ -76,7 +76,7 @@ app.use(function(err, req, res, next) {
         'Login Failed'   : '登录失败，请检查学号、密码及验证码是否输入正确，注意需要使用教务系统密码而非学工系统密码'
     }
 
-    var message = messageTrans[err.message];
+    let message = messageTrans[err.message];
 
     if(message) {
 

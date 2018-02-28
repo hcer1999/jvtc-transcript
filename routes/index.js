@@ -1,57 +1,65 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs');
-var path = require('path');
-var jwweb = require('../lib/jwweb');
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const User = require('../lib/jwweb');
+const logUser = require('../lib/log-user')(path.join(__dirname, '..', 'public', 'user.log'));
 
-function logUser(id, name, date) {
+const userStore = {};
 
-    var logStr = `${new Date().toISOString('zh-CN')}\t学号:${id}\t姓名:${name}\t查询学期:${date}\r\n`;
+router.use(function(req, res, next) {
+    let uid = req.cookies.uid;
+    if(uid && userStore[uid]) {
+        req.user = userStore[uid];
+    }
+    next();
+});
 
-    fs.createWriteStream(path.join(__dirname, '..', 'public', 'user.log'), {
-        flags: 'a+'
-    }).end(logStr, 'utf-8');
-}
-
-// 首页路由
 router.get('/', function(req, res, next) {
+    if(req.user) {
+        req.user.logout();
+        delete userStore[req.user.id];
+    }
+    next();
+});
 
-    var uid = req.cookies.uid;
-    uid && jwweb.logout(uid);
-    
-    var message = req.getEchoMessage();
+router.get('/', function(req, res, next) {
+    let message = req.getEchoMessage();
+    let user = new User();
 
-    jwweb.connect().then(uid => {
-        res.cookie('uid', uid);
-        res.render('index', {message: message});
-    }).catch(err => next(err));
+    userStore[user.id] = user;
+    setTimeout(function() {
+        delete userStore[user.id];
+    }, 600000);     // 用户实例保存10分钟
+
+    user.init().then(function() {
+        res.cookie('uid', user.id);
+        res.render('index', {message});
+    }).catch(next);
 });
 
 router.post('/', function(req, res, next) {
-
-    var uid = req.cookies.uid;
-    var form = req.body;
-
-    jwweb.login(uid, {
-        userID: form.stuId, 
+    if(!req.user) throw new Error('UID Not Exist');
+    
+    let form = req.body;
+    let info = {
+        userid: form.stuId, 
         password: form.stuPwd, 
         captcha: form.code
-    }).then(logined => {
-        if(logined) {
-            res.redirect(303, `/transcript/${form.stuId}/${form.date}`);
-        } else {
-            throw new Error('Login Failed');
-        }
-    }).catch(err => next(err));
+    }
+
+    req.user.login(info).then(logined => {
+        if(!logined) throw new Error('Login Failed');
+        res.redirect(303, `/transcript/${form.stuId}/${form.date}`);
+    }).catch(next);
 });
 
 router.get('/transcript/:id/:date', function(req, res, next) {
+    if(!req.user) throw new Error('UID Not Exist');
 
-    var uid = req.cookies.uid;
-    var date = req.params.date;
-    var message = '';
+    let date = req.params.date;
+    let message = '';
 
-    jwweb.getResults(uid, date).then(result => {
+    req.user.getResults(date).then(result => {
 
         if(result.transcript.length !== 0) {
             logUser(result.id, result.name, date);
@@ -62,23 +70,18 @@ router.get('/transcript/:id/:date', function(req, res, next) {
 
         // 三分钟内重复查询直接使用浏览器缓存结果
         res.set('Cache-Control', 'max-age=180');
-        res.render('result', {
-            result: result,
-            date: date,
-            message: message
-        });
-    }).catch(err => next(err));
+        res.render('result', {result, date, message});
+    }).catch(next);
 });
 
 // 获取验证码
 router.get('/captcha', function(req, res, next) {
-
-    var uid = req.cookies.uid;
+    if(!req.user) throw new Error('UID Not Exist');
     
-    jwweb.getCaptcha(uid).then(imgData => {
+    req.user.getCaptcha().then(imgData => {
         res.set('Cache-Control', 'no-cache');
         res.end(imgData);
-    }).catch(err => next(err));
+    }).catch(next);
 });
 
 module.exports = router;
