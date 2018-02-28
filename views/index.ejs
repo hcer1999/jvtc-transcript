@@ -88,12 +88,12 @@
     </footer>
 
     <script>
-        // 10分钟后自动刷新主页（会话有效期从请求主页开始只有10分钟）
+        // 接近停留10分钟时自动刷新主页（会话有效期从请求主页开始只有10分钟）
         (function() {
             var loadTime = +new Date();
             var handle;
             handle = setInterval(function() {
-                if(+new Date() - loadTime > 600000) {
+                if(+new Date() - loadTime > 600000 - 160000) {
                     location.reload(true);
                     clearInterval(handle);
                 }
