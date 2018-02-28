@@ -17,7 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.set('view cache', false);
 
-app.use(compression({level: zlib.Z_BEST_COMPRESSION}));
+app.use(compression({level: zlib.Z_BEST_SPEED}));
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
