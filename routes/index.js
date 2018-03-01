@@ -17,11 +17,11 @@ for(let {char, sampleVal} of sampleData) {
 }
 
 
-const userCache = new Cache(10 * 60 * 1000);    // 用户会话记录缓存十分钟
+const sessionCache = new Cache(10 * 60 * 1000);    // 用户会话记录缓存十分钟
 
 router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
-    let user = userCache.get(uid);
+    let user = sessionCache.get(uid);
     if(uid && user) {
         req.user = user;
     }
@@ -31,7 +31,7 @@ router.use(function(req, res, next) {
 router.get('/', function(req, res, next) {
     if(req.user) {
         req.user.logout();
-        userCache.delete(req.user.id);
+        sessionCache.delete(req.user.id);
     }
     next();
 });
@@ -69,7 +69,7 @@ router.post('/', function(req, res, next) {
         return user.login(form);
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
-        userCache.set(user.id, user);        
+        sessionCache.set(user.id, user);        
         res.cookie('uid', user.id);     // 在cookie中存储用户id
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
     }).catch(next);
