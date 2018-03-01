@@ -1,15 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
 const logUser = require('../lib/log-user')(path.join(__dirname, '..', 'public', 'user.log'));
 
-const userStore = {};
+const userCache = new Cache(10 * 60 * 1000);    // 用户会话记录缓存十分钟
 
 router.use(function(req, res, next) {
-    let uid = req.cookies.uid;
-    if(uid && userStore[uid]) {
-        req.user = userStore[uid];
+    let uid  = req.cookies.uid;
+    let user = userCache.get(uid);
+    if(uid && user) {
+        req.user = user;
     }
     next();
 });
@@ -17,7 +19,7 @@ router.use(function(req, res, next) {
 router.get('/', function(req, res, next) {
     if(req.user) {
         req.user.logout();
-        delete userStore[req.user.id];
+        userCache.delete(req.user.id);
     }
     next();
 });
@@ -26,10 +28,7 @@ router.get('/', function(req, res, next) {
     let message = req.getEchoMessage();
     let user = new User();
 
-    userStore[user.id] = user;
-    setTimeout(function() {
-        delete userStore[user.id];
-    }, 600000);     // 用户实例保存10分钟
+    userCache.set(user.id, user);
 
     user.init().then(function() {
         res.cookie('uid', user.id);
