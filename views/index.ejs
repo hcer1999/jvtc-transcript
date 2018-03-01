@@ -40,30 +40,6 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="captcha-input" class="col-sm-2 control-label">验证码</label>
-            <div class="col-sm-9">
-            <input type="text" name="captcha" class="form-control" id="captcha-input" placeholder="验证码" autocomplete="off">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-9">
-                <!-- 验证码 -->
-                <img id="captcha" src="/captcha" alt="点击更换验证码" title="点击更换验证码" width="122" height="54" style="cursor: pointer;">
-                <script>
-                    window.onload = function() {
-                        var captcha = document.getElementById('captcha');
-                        var lastClickTime;
-                        captcha.onclick = function() {
-                            lastClickTime = lastClickTime || new Date() - 1000;
-                            if(new Date() - lastClickTime < 600) return;
-                            lastClickTime = +new Date();
-                            this.src = '/captcha?' + parseInt(Math.random() * 10000);
-                        };
-                    }
-                </script>
-            </div>
-        </div>
-        <div class="form-group">
         <div class="col-sm-offset-2 col-sm-9">
             <%- include('_partial/semester-picker', typeof semester !== 'undefined' ? {semester} : {semester: ''}) %>
         </div>
@@ -73,9 +49,7 @@
             <input type="submit" class="btn btn-info form-control" value="查询">
             </div>
         </div>
-
         </form>
-
     </div>
 
     <footer>
@@ -99,77 +73,6 @@
                 }
             }, 500);
         })();
-    </script>
-
-    <!-- 自动填写验证码相关代码 -->
-    <script src="javascripts/Captcha.js"></script>
-    <script src="javascripts/sample-data.js"></script>
-    <script>
-        
-        let recognizer = new Recognizer();
-        
-        // 加载样本数据
-        for(let {char, sampleVal} of window['sample-data']) {
-            recognizer.addSampleData(char, sampleVal);
-        }
-
-        (function initCaptchaRec() {
-            let captcha = document.getElementById('captcha');
-            if(captcha.complete === true || (captcha.complete === undefined && captcha.width !== 0)) {
-
-                fillCaptcha();
-                captcha.onload = fillCaptcha;
-
-                function fillCaptcha() {
-                    let result = recognize(captcha, recognizer);
-                    if(typeof result !== 'string') {
-                        captcha.src = '/captcha?' + parseInt(Math.random() * 10000);
-                    } else {
-                        document.getElementById('captcha-input').value = result;
-                    }
-                }
-            } else {
-                setTimeout(initCaptchaRec, 40);
-            }
-        })();
-
-        function recognize(img, recognizer) {
-            var imgData = getImageData(img);
-            var captcha = new Captcha(imgData);
-
-            // 处理验证码
-            captcha.dispose();
-
-            // 获取验证码中切割出的字符图形数据
-            var slicedChars = captcha.sliceCharacter();
-
-            // 不识别字符数不为4的验证码(存在粘连字符)
-            if (slicedChars.length !== 4) {
-                return null;
-            }
-
-            var chars = [];
-            // 绘制切割出的字符图像数据
-            for (var i = 0; i < slicedChars.length; i++) {
-                var charImageData = slicedChars[i];
-
-                // 将切割出的字符尺寸调整为24*24
-                var normalImageData = resizeImageData(charImageData, 24, 24);
-
-                // 使用切割出的字符图像创建Captcha实例
-                var normalCaptcha = new Captcha(normalImageData);
-
-                // 获取特征字符串
-                var sampleString = normalCaptcha.getSampleString();
-
-                // 根据特征字符串识别
-                var matchedChar = recognizer.matchSample(sampleString);
-
-                chars.push(matchedChar);
-            }
-
-            return chars.join('');
-        }
     </script>
 </body>
 </html>

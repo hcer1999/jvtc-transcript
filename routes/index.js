@@ -103,14 +103,4 @@ router.get('/transcript/:id/:semester', function(req, res, next) {
     }).catch(next);
 });
 
-// 获取验证码
-router.get('/captcha', function(req, res, next) {
-    if(!req.user) throw new Error('UID Not Exist');
-    
-    req.user.getCaptcha().then(imgData => {
-        res.set('Cache-Control', 'no-cache');
-        res.end(imgData);
-    }).catch(next);
-});
-
 module.exports = router;
