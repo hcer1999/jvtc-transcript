@@ -38,17 +38,10 @@ router.get('/', function(req, res, next) {
 
 router.get('/', function(req, res, next) {
     let message = req.getEchoMessage();
-    let user = new User();
-
-    userCache.set(user.id, user);
-
-    user.init().then(function() {
-        res.cookie('uid', user.id);
-        res.render('index', {message});
-    }).catch(next);
+    res.render('index', {message});
 });
 
-async function fillCaptcha(user) {
+async function getCaptchaCode(user) {
     let code = '';
     while(1) {
         let imageData = await user.getCaptcha();
@@ -68,18 +61,16 @@ async function fillCaptcha(user) {
 }
 
 router.post('/', function(req, res, next) {
-    if(!req.user) throw new Error('UID Not Exist');
-    
     let form = req.body;
-
-    // 提交的表单captcha字段为空时，在后端获取验证码识别
-    let getCaptcha = form.captcha ? Promise.resolve(form.captcha) : fillCaptcha(req.user);
-
-    getCaptcha.then(code => {
+    let user = new User();
+    
+    user.init().then(getCaptchaCode).then(code => {
         form.captcha = code;
-        return req.user.login(form);
+        return user.login(form);
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
+        userCache.set(user.id, user);        
+        res.cookie('uid', user.id);     // 在cookie中存储用户id
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
     }).catch(next);
 });
