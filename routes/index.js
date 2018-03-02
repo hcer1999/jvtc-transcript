@@ -29,14 +29,6 @@ router.use(function(req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-    if(req.user) {
-        req.user.logout();
-        sessionCache.delete(req.user.id);
-    }
-    next();
-});
-
-router.get('/', function(req, res, next) {
     let message = req.getEchoMessage();
     res.render('index', {message});
 });
