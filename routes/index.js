@@ -3,7 +3,8 @@ const router = express.Router();
 const path = require('path');
 const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
-const logUser = require('../lib/log-user')(path.join(__dirname, '..', 'public', 'user.log'));
+const Log = require('../lib/Log');
+const actionLog = new Log((path.join(__dirname, '..', 'public', 'action.log')));
 const Captcha = require('../lib/Captcha');
 const Jimp = require("jimp");
 const sampleData = require('../lib/sample-data');
@@ -64,6 +65,10 @@ router.post('/', function(req, res, next) {
         sessionCache.set(user.id, user);     // User实例成功登录后将User实例存入sessionCache
         res.cookie('uid', user.id, {maxAge: sessionCachingTime - 2 * 60 * 1000});     // 在cookie中存储sessionCache的key
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
+        actionLog.log(`[${form.userid}]登录成功`);
+    }).catch(err => {
+        actionLog.log(`[${form.userid}]登录失败[${err.message}]`);
+        throw err;
     }).catch(next);
 });
 
@@ -74,10 +79,12 @@ router.get('/transcript/:id/:semester', function(req, res, next) {
     let message = '';
 
     req.user.getResults(semester).then(result => {
-        logUser(result.id, result.name, semester);
         if(result.transcript.length === 0) {
             let year = new Date().getFullYear();
             message = `没有该学期的成绩，注意：${year - 1}-${year}学年是指${year - 1}年9月到${year}年7月的学年`;
+            actionLog.log(`[${result.id}][${result.name}]尝试查询[${semester}]学期的成绩，发现并没有该学期的成绩`);
+        } else {
+            actionLog.log(`[${result.id}][${result.name}]成功查询[${semester}]学期的成绩`);            
         }
         res.render('result', {result, semester, message});
     }).catch(next);
