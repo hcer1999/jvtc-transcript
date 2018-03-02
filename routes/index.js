@@ -16,8 +16,8 @@ for(let {char, sampleVal} of sampleData) {
     recognizer.addSampleData(char, sampleVal);
 }
 
-
-const sessionCache = new Cache(10 * 60 * 1000);    // 用户会话记录缓存十分钟
+const sessionCachingTime = 10 * 60 * 1000;    // 用户会话记录缓存十分钟
+const sessionCache = new Cache(sessionCachingTime);
 
 router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
@@ -70,7 +70,7 @@ router.post('/', function(req, res, next) {
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user);        
-        res.cookie('uid', user.id);     // 在cookie中存储用户id
+        res.cookie('uid', user.id, {maxAge: sessionCachingTime - 2 * 60 * 1000});     // 在cookie中存储会话id
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
     }).catch(next);
 });
