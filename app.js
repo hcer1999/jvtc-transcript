@@ -73,7 +73,9 @@ app.use(function(err, req, res, next) {
         'Data Incomplete': '学校教务系统返回的数据不完整，无法正常解析',
         'UID Not Exist'  : '你的会话已过期，请重新登录',
         'Unexpected Page': '学校教务系统返回了预期之外的数据，请尝试重新登录',
-        'Login Failed'   : '登录失败，请检查学号、密码及验证码是否输入正确，注意需要使用教务系统密码而非学工系统密码'
+        'Login Failed'   : '登录失败，请检查学号、密码及验证码是否输入正确，注意需要使用教务系统密码而非学工系统密码',
+        'ETIMEDOUT'      : '与学校教务系统连接超时，可能是教务系统暂时无法访问（你懂的，学校服务器经常挂），请稍后再试',
+        'ESOCKETTIMEDOUT': '与学校教务系统连接超时，可能是教务系统暂时无法访问（你懂的，学校服务器经常挂），请稍后再试'
     }
 
     let message = messageTrans[err.message];
@@ -86,25 +88,7 @@ app.use(function(err, req, res, next) {
         res.redirect(303, '/');
 
     } else {
-
-        // 这里处理 messageTrans 中列出的错误信息以外的情况
-        // 由于请求主页会对教务系统服务器发出请求，所以有些情况下不能直接跳转到首页显示错误信息
-        // 比如与学校服务器连接超时，这时如果跳转到首页显示错误消息，可能出现死循环
-        // 所以对于 messageTrans 中列出的错误信息以外的情况，应该渲染错误页面，防止造成意外情况
-
-        res.locals.message = err.message;
-        res.locals.error = {};
-
-        let description = '';
-        if(err.message === 'ETIMEDOUT' || err.message === 'ESOCKETTIMEDOUT') {
-            err.status = 503;
-            description = '与学校教务系统连接超时，可能是教务系统暂时无法访问（你懂的，学校服务器经常挂），请稍后再试';
-        }
-
-        res.status(err.status || 500);
-
-        // 渲染错误页
-        res.render('error', {description: description});
+        next(err);
     }
 });
 
