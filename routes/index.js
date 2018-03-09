@@ -62,7 +62,7 @@ router.post('/', function(req, res, next) {
         return user.login(form);
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
-        sessionCache.set(user.id, user);     // User实例成功登录后将User实例存入sessionCache
+        sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
         res.cookie('uid', user.id, {maxAge: sessionCachingTime - 2 * 60 * 1000});     // 在cookie中存储sessionCache的key
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
