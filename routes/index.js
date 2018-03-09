@@ -24,6 +24,7 @@ router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
     let user = sessionCache.get(uid);
     if(uid && user) {
+        sessionCache.refresh(uid);  // 重置会话记录过期时间
         req.user = user;
     }
     next();
@@ -63,7 +64,7 @@ router.post('/', function(req, res, next) {
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
-        res.cookie('uid', user.id, {maxAge: sessionCachingTime - 2 * 60 * 1000});     // 在cookie中存储sessionCache的key
+        res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
     }).catch(err => {
