@@ -86,8 +86,10 @@ router.post('/', function(req, res, next) {
     let user = new User();
     
     user.init().then(getCaptchaCode).then(code => {
-        form.captcha = code;
-        return user.login(form);
+        return user.login({...form, captcha: code});
+    }).then(logined => {
+        if(logined) return Promise.resolve(logined);
+        return getCaptchaCode(user).then(code => user.login({...form, captcha: code}));   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
