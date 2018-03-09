@@ -20,6 +20,9 @@ for(let {char, sampleVal} of sampleData) {
 const sessionCachingTime = 10 * 60 * 1000;    // 用户会话记录缓存十分钟
 const sessionCache = new Cache(sessionCachingTime);
 
+let loginTimes = Object.create(null);    // 记录ip对应的尝试登录次数
+setInterval(() => loginTimes = Object.create(null), 30 * 60 * 1000)     // 每三十分钟清除一次ip登录次数记录
+
 router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
     let user = sessionCache.get(uid);
@@ -53,6 +56,19 @@ async function getCaptchaCode(user) {
     }
     return code;
 }
+
+router.post('/', function(req, res, next) {
+    let ip = req.ip;
+
+    loginTimes[ip] = loginTimes[ip] ? loginTimes[ip] + 1 : 1;
+
+    // 该ip尝试登录次数过多，拒绝访问
+    if(loginTimes[ip] > 20) {
+        res.status(429);
+        next(new Error('Login Frequently'));
+    }
+    next();
+});
 
 router.post('/', function(req, res, next) {
     let {userid, password, semester} = req.body;
