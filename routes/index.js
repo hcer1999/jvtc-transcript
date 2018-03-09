@@ -55,6 +55,17 @@ async function getCaptchaCode(user) {
 }
 
 router.post('/', function(req, res, next) {
+    let {userid, password, semester} = req.body;
+    if(!(userid && password && semester)) {
+        return next(new Error('Login Failed'));
+    }
+    if(!(userid.trim() && password.trim() && semester.trim())) {
+        return next(new Error('Login Failed'));
+    }
+    next();
+});
+
+router.post('/', function(req, res, next) {
     let form = req.body;
     let user = new User();
     
