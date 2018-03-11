@@ -72,10 +72,12 @@ router.post('/', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
     let {userid, password, semester} = req.body;
+    // 必填字段不存在
     if(!(userid && password && semester)) {
         return next(new Error('Login Failed'));
     }
-    if(!(userid.trim() && password.trim() && semester.trim())) {
+    // 学号存在非数字字符
+    if(Array.from(userid).every(c => /\d/.test(c)) === false) {
         return next(new Error('Login Failed'));
     }
     next();
