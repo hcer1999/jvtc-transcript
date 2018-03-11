@@ -111,15 +111,19 @@ router.get('/transcript/:id/:semester', function(req, res, next) {
     let semester = req.params.semester;
     let message = '';
 
-    user.getResults(semester).then(transcript => {
-        if(transcript.length === 0) {
+    user.getResults(semester).then(result => {
+        if(result.transcript.length === 0) {
             let year = new Date().getFullYear();
             message = `没有该学期的成绩，注意：${year - 1}-${year}学年是指${year - 1}年9月到${year}年7月的学年`;
             actionLog.log(`[${user.userid}][${user.username}]尝试查询[${semester}]学期的成绩，发现并没有该学期的成绩`);
         } else {
             actionLog.log(`[${user.userid}][${user.username}]成功查询[${semester}]学期的成绩`);            
         }
-        res.render('result', {transcript, semester, message});
+        res.render('result', {
+            transcript: result.transcript, 
+            semester: result.semester, 
+            message: message
+        });
     }).catch(next);
 });
 
