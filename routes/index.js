@@ -122,6 +122,8 @@ router.get('/transcript/:id/:semester', function(req, res, next) {
         res.render('result', {
             transcript: result.transcript, 
             semester: result.semester, 
+            userid: result.userid, 
+            username: result.username,
             message: message
         });
     }).catch(next);
