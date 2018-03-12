@@ -104,11 +104,7 @@ router.post('/', function(req, res, next) {
     }).catch(next);
 });
 
-// 查询最后一个有成绩的学期的成绩的路由
-router.get('/transcript/:id/latest', async function(req, res, next) {
-    if(!req.user) throw new Error('UID Not Exist');
-    
-    let user = req.user;
+async function getLastResult(user) {
     let year = new Date().getFullYear();
     let month = new Date().getMonth();
     let semesters = [];
@@ -118,18 +114,47 @@ router.get('/transcript/:id/latest', async function(req, res, next) {
     month >= 4  && semesters.unshift(year - 1 + '1');   // 五月起
     month >= 10 && semesters.unshift(year + '0');       // 十一月起
 
-    let hasResult = false;
     for(let semester of semesters) {
         let result = await user.getResults(semester);
         if(result.transcript.length !== 0) {
-            res.render('result', result);
-            hasResult = true;
-            actionLog.log(`[${user.userid}][${user.username}]成功查询[${semester}]学期的成绩`);
-            break;
+            return result;
         }
     }
-    if(hasResult === false) {
-        throw new Error('No Result');   // 没有成绩的新生
+
+    throw new Error('No Result');   // 没有成绩的新生
+}
+
+// 查询最后一个有成绩的学期的成绩的路由
+router.get('/transcript/:id/latest', function(req, res, next) {
+    if(!req.user) throw new Error('UID Not Exist');
+    
+    getLastResult(req.user).then(result => {
+        actionLog.log(`[${result.userid}][${result.username}]成功查询[${result.semester}]学期的成绩`);        
+        res.render('result', result);
+    }).catch(next);
+});
+
+// 查询所有有成绩的学期的成绩的路由
+router.get('/transcript/:id/all', async function(req, res, next) {
+    if(!req.user) next(new Error('UID Not Exist'));
+
+    try {
+        let results = [];
+        let result = await getLastResult(req.user);
+        while(result.transcript.length !== 0) {
+            actionLog.log(`[${result.userid}][${result.username}]成功查询[${result.semester}]学期的成绩`);
+            results.push(result);
+            let semester = result.semester;
+            if(semester[semester.length - 1] === '0') {
+                semester = +semester.slice(0, 4) - 1 + '1';
+            } else {
+                semester = +semester.slice(0, 4) + '0';
+            }
+            result = await req.user.getResults(semester);
+        }
+        res.render('results', {results: results});
+    } catch (err) {
+        next(err);
     }
 });
 

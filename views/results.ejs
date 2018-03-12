@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <%- include('_partial/head', {title: '查询结果'}); %>
+
+    <style>
+        @media (max-width: 768px) {
+            .four-char-width {
+                width: 4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('_partial/message', {message: typeof message === 'string' ? message : ''}) %>
+    
+    <div class="container">
+    <% for(let result of results) { %>
+    <table class="table table-hover">
+        <caption>
+        <h1 class="text-center" style="margin-bottom: 1em;">成绩认定记录</h1>
+
+        <p>学号：<%= result.userid %>&nbsp;&nbsp;&nbsp;&nbsp; 姓名：<%= result.username %>&nbsp;&nbsp;&nbsp;&nbsp; 学年：<%= result.semester %></p>
+
+        </caption>
+        <thead>
+        <tr>
+            <th>课程名称</th>
+            <th class="four-char-width">学分</th>
+            <th class="four-char-width">类型</th>
+            <th class="four-char-width">分数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for(let item of result.transcript) { %>
+        <tr>
+            <td><%= item.name %></td>
+            <td><%= item.credit %></td>
+            <td><%= item.type %></td>
+            <td><%= item.score %></td>
+        </tr>
+        <% } %>
+        </tbody>
+    </table>
+    <% } %>
+    <a href="/" class="pull-right" style="margin-bottom: 20px;">返回首页</a>    
+    
+    </div>
+
+</body>
+</html>
