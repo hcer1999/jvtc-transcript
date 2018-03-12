@@ -71,9 +71,9 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    let {userid, password, semester} = req.body;
+    let {userid, password} = req.body;
     // 必填字段不存在
-    if(!(userid && password && semester)) {
+    if(!(userid && password)) {
         return next(new Error('Login Failed'));
     }
     // 学号存在非数字字符
@@ -96,12 +96,41 @@ router.post('/', function(req, res, next) {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
-        res.redirect(303, `/transcript/${form.userid}/${form.semester}`);
+        res.redirect(303, `/transcript/${form.userid}/latest`);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
     }).catch(err => {
         actionLog.log(`[${form.userid}]登录失败[${err.message}]`);
         throw err;
     }).catch(next);
+});
+
+// 查询最后一个有成绩的学期的成绩的路由
+router.get('/transcript/:id/latest', async function(req, res, next) {
+    if(!req.user) throw new Error('UID Not Exist');
+    
+    let user = req.user;
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth();
+    let semesters = [];
+
+    month >= 0  && semesters.unshift(year - 2 + '1');
+    month >= 0  && semesters.unshift(year - 1 + '0');   // 一月起
+    month >= 4  && semesters.unshift(year - 1 + '1');   // 五月起
+    month >= 10 && semesters.unshift(year + '0');       // 十一月起
+
+    let hasResult = false;
+    for(let semester of semesters) {
+        let result = await user.getResults(semester);
+        if(result.transcript.length !== 0) {
+            res.render('result', result);
+            hasResult = true;
+            actionLog.log(`[${user.userid}][${user.username}]成功查询[${semester}]学期的成绩`);
+            break;
+        }
+    }
+    if(hasResult === false) {
+        throw new Error('No Result');   // 没有成绩的新生
+    }
 });
 
 router.get('/transcript/:id/:semester', function(req, res, next) {
