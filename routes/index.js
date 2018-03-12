@@ -84,22 +84,22 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    let form = req.body;
+    let {userid, password, range} = req.body;
     let user = new User();
     
     user.init().then(getCaptchaCode).then(code => {
-        return user.login({...form, captcha: code});
+        return user.login({userid, password, captcha: code});
     }).then(logined => {
         if(logined) return Promise.resolve(logined);
-        return getCaptchaCode(user).then(code => user.login({...form, captcha: code}));   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
+        return getCaptchaCode(user).then(code => user.login({userid, password, captcha: code}));   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
-        res.redirect(303, `/transcript/${form.userid}/latest`);
+        res.redirect(303, `/transcript/${userid}/${range}`);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
     }).catch(err => {
-        actionLog.log(`[${form.userid}]登录失败[${err.message}]`);
+        actionLog.log(`[${userid}]登录失败[${err.message}]`);
         throw err;
     }).catch(next);
 });
