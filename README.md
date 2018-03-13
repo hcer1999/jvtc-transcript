@@ -41,7 +41,7 @@ $ npm install pm2 -g
 $ export NODE_ENV=production
 
 # 使用pm2运行程序
-$ pm2 start npm -- start
+$ pm2 start npm -n jvtctr -- start
 ```
 
 
