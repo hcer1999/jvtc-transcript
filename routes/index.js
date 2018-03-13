@@ -96,7 +96,7 @@ router.post('/', function(req, res, next) {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
-        res.redirect(303, `/transcript/${userid}/${range}`);
+        res.redirect(303, '/transcript/' + range);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
     }).catch(err => {
         actionLog.log(`[${userid}]登录失败[${err.message}]`);
@@ -125,7 +125,7 @@ async function getLastResult(user) {
 }
 
 // 查询最后一个有成绩的学期的成绩的路由
-router.get('/transcript/:id/latest', function(req, res, next) {
+router.get('/transcript/latest', function(req, res, next) {
     if(!req.user) throw new Error('UID Not Exist');
     
     getLastResult(req.user).then(result => {
@@ -135,7 +135,7 @@ router.get('/transcript/:id/latest', function(req, res, next) {
 });
 
 // 查询所有有成绩的学期的成绩的路由
-router.get('/transcript/:id/all', async function(req, res, next) {
+router.get('/transcript/all', async function(req, res, next) {
     if(!req.user) next(new Error('UID Not Exist'));
 
     try {
