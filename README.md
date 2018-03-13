@@ -1,56 +1,60 @@
-# 九江职业技术学院成绩查询系统
+九江职业技术学院第三方成绩查询系统，程序通过模拟登录教务系统的方式从教务系统获取成绩，简化了使用教务系统查询成绩的中间步骤，并提供了移动端友好的界面，方便学生在手机端查询成绩
 
-由于超级课程表常年没法刷出验证码以及学校网站没有手机页面的原因，写了一个简单的成绩查询系统
-
-程序通过模拟登录教务系统网站获取学生成绩信息
-
+程序实现了自动识别教务系统验证码，现在只需要输入学号和教务系统密码即可查询成绩
 
 ## 部署
 
-### 安装依赖项
+请确保已安装最新版本的Node.js
 
-> npm install
+安装依赖项：
 
-### 设置生产环境
+```
+$ npm install
+```
 
-Windows PowerShell:
-> $env:NODE_ENV = "production"
+设置生产环境：
 
-Linux:
-> export NODE_ENV=production
+```
+# Windows PowerShell
+$ $env:NODE_ENV = "production"
 
-### 运行程序
+# Linux
+$ export NODE_ENV=production
+```
 
-> npm start
+运行程序：
 
-程序默认监听`3050`端口，现在可以访问 <http://localhost:3050/> 使用查询系统
+```
+# 可以通过设置'PORT'环境变量修改监听端口，默认监听3050端口
+$ npm start
+```
 
-通过设置`PORT`环境变量可以修改监听端口号
+---
 
-### 持久运行
+使用[pm2](https://github.com/Unitech/pm2)后台持久运行程序：
 
-请使用[forever](https://github.com/foreverjs/forever)、[pm2](https://github.com/Unitech/pm2)等持续运行工具部署程序
+```
+# 全局安装pm2
+$ npm install pm2 -g
+
+# 设置环境变量
+$ export NODE_ENV=production
+
+# 使用pm2运行程序
+$ pm2 start npm -- start
+```
 
 
 ## 日志
 
-access.log：HTTP访问日志
+- access.log：HTTP访问日志
 
-public/user.log：记录查询者的姓名、学号及查询时间等
-
-
-## 自动填写验证码（2018/1/17新增
-
-现在登录页在较新的浏览器上会自动识别并填写验证码
-
-相关代码在`recognizer`分支中：https://github.com/Chocolatl/jvtc-transcript/tree/recognizer
-
-当修改验证码识别相关功能时，应该在`recognizer`分支修改代码，再复制到`master`分支中
+- public/action.log：记录用户行为
 
 
 ## 部署到其他学校
 
-本校的教务系统使用的是青果教务系统（没错就是那个辣鸡湖南青果软件有限公司做的），理论上使用该教务系统的学校都可以稍微修改源码后部署使用
+本校的教务系统使用的是青果教务系统（就是那个辣鸡湖南青果软件有限公司做的），理论上使用该教务系统的学校都可以稍微修改源码后部署使用
 
 
 ## 网站
