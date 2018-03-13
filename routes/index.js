@@ -136,7 +136,7 @@ router.get('/transcript/latest', function(req, res, next) {
 
 // 查询所有有成绩的学期的成绩的路由
 router.get('/transcript/all', async function(req, res, next) {
-    if(!req.user) next(new Error('UID Not Exist'));
+    if(!req.user) return next(new Error('UID Not Exist'));
 
     try {
         let results = [];
