@@ -6,7 +6,6 @@ const User = require('../lib/jwweb');
 const Log = require('../lib/Log');
 const actionLog = new Log((path.join(__dirname, '..', 'public', 'action.log')));
 const Captcha = require('../lib/Captcha');
-const Jimp = require('jimp');
 const sampleData = require('../lib/sample-data');
 const Recognizer = require('../lib/Recognizer');
 
