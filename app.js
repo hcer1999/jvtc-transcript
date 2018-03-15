@@ -71,7 +71,6 @@ app.use(function(err, req, res, next) {
     let messageTrans = {
         'Not Found'       : '你访问了一个根本不存在的页面，我们将你带回了主页',
         'UID Not Exist'   : '你的会话已过期，请重新登录',
-        'Unexpected Page' : '学校教务系统返回了预期之外的数据，请尝试重新登录',
         'Login Failed'    : '登录失败，请检查账号密码是否输入正确，注意需要使用教务系统密码而非学工系统密码',
         'Login Frequently': '登录过于频繁，请稍后再试。该问题也可能是你所在网络环境内其他用户频繁登录导致的',
         'No Result'       : '没有查询到有效成绩，可能你不是在校生或是没有任何成绩的新生'
