@@ -9,7 +9,7 @@ const Captcha = require('../lib/Captcha');
 const sampleData = require('../lib/sample-data');
 const Recognizer = require('../lib/Recognizer');
 
-User.setRootUrl('http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
+User.setRootUrl(process.env.ROOT_URL || 'http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
 
 const recognizer = new Recognizer();
 
