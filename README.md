@@ -60,19 +60,19 @@ $ pm2 start npm -n jvtctr -- start
 
 下一步确保以下页面能够正常访问：
 
-ROOT_URL + '_data/index_LOGIN.aspx';
-
-ROOT_URL + 'sys/ValidateCode.aspx';
+> ROOT_URL + '_data/index_LOGIN.aspx';
+> 
+> ROOT_URL + 'sys/ValidateCode.aspx';
 
 如果以上页面能够正常访问，请**登录教务系统**，再尝试访问以下页面：
 
-ROOT_URL + 'xscj/c_ydcjrdjl.aspx';
-
 ROOT_URL + 'PUB/foot.aspx';
+> 
+> ROOT_URL + 'PUB/foot.aspx';
 
 如果以上页面也能正常访问，且没有出现**您无权访问此页**的提示，即可尝试部署该程序
 
-步骤基本与**部署**小节中一致，只需要添加环境变量`ROOT_URL`为学校教务系统根路径即可：
+步骤基本与**部署**小节中一致，只需要额外添加环境变量`ROOT_URL`为学校教务系统根路径即可：
 
 ```
 $ export ROOT_URL=http://218.65.5.214:2001/jwweb/
