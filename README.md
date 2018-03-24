@@ -49,7 +49,7 @@ $ pm2 start npm -n jvtctr -- start
 
 - access.log：HTTP访问日志
 
-- public/action.log：记录用户行为
+- public/action.log：用户行为记录
 
 
 ## 部署到其他学校
