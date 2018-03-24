@@ -42,7 +42,7 @@ async function getCaptchaCode(user) {
     while(1) {
         let imageData = await user.getCaptcha();
         let captcha = await new Captcha(imageData);
-        let slicedChars = await captcha.dispose().sliceCharacter();
+        let slicedChars = await captcha.getChars();
         if(slicedChars.length !== 4) {
             continue;
         }
