@@ -66,7 +66,7 @@ $ pm2 start npm -n jvtctr -- start
 
 如果以上页面能够正常访问，请**登录教务系统**，再尝试访问以下页面：
 
-ROOT_URL + 'PUB/foot.aspx';
+> ROOT_URL + 'xscj/c_ydcjrdjl.aspx';
 > 
 > ROOT_URL + 'PUB/foot.aspx';
 
