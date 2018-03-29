@@ -37,19 +37,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 一次性消息中间件
 app.use(function (req, res, next) {
-
-    req.getEchoMessage = function () {
-        let message = req.cookies.messgae;
-        if (message) {
-            res.clearCookie('messgae');
-        }
-        return message;
-    }
-
-    res.setEchoMessage = function (value) {
+    res.setEchoMessage = (value) => {
         res.cookie('messgae', value);
     }
-
+    req.getEchoMessage = () => {
+        res.clearCookie('messgae');
+        return req.cookies.messgae;
+    }
     next();
 });
 
