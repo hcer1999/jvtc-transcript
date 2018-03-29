@@ -56,37 +56,23 @@ app.use(function (req, res, next) {
     next(err);
 });
 
+// 生产环境下的错误处理
 app.use(function(err, req, res, next) {
-
-    if(req.app.get('env') === 'development') {
-        return next(err);
-    }
-
+    if(req.app.get('env') === 'development') return next(err);
+    
+    // connect ETIMEDOUT 218.65.5.214:2001、ETIMEDOUT、ESOCKETTIMEDOUT等情况
+    err.message = err.message.toLowerCase().includes('timedout') ? 'TIMEDOUT' : err.message;
     let messageTrans = {
         'Not Found'       : '你访问了一个根本不存在的页面，我们将你带回了主页',
         'UID Not Exist'   : '你的会话已过期，请重新登录',
         'Login Failed'    : '登录失败，请检查账号密码是否输入正确，注意需要使用教务系统密码而非学工系统密码',
         'Login Frequently': '登录过于频繁，请稍后再试。该问题也可能是你所在网络环境内其他用户频繁登录导致的',
-        'No Result'       : '没有查询到有效成绩，可能你不是在校生或是没有任何成绩的新生'
+        'No Result'       : '没有查询到有效成绩，可能你不是在校生或是没有任何成绩的新生',
+        'TIMEDOUT'        : '与学校教务系统连接超时，可能是教务系统暂时无法访问（你懂的，学校服务器经常挂），请稍后再试'
     }
 
-    let message = messageTrans[err.message];
-
-    // connect ETIMEDOUT 218.65.5.214:2001、ETIMEDOUT、ESOCKETTIMEDOUT等情况
-    if(err.message.toLowerCase().includes('timedout')) {
-        message = '与学校教务系统连接超时，可能是教务系统暂时无法访问（你懂的，学校服务器经常挂），请稍后再试';
-    }
-
-    if(message) {
-
-        res.setEchoMessage(message);
-
-        // 返回主页
-        res.redirect(303, '/');
-
-    } else {
-        next(err);
-    }
+    res.setEchoMessage(messageTrans[err.message] || err.message);
+    res.redirect(303, '/'); // 返回主页
 });
 
 // error handler
