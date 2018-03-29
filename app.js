@@ -7,10 +7,8 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const zlib = require('zlib');
 const fs = require('fs');
-
-const index = require('./routes/index');
-
 const app = express();
+const index = require('./routes/index');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +28,7 @@ if (app.get('env') === 'development') {
     let logFormat = '[:remote-addr] :method :status :url [:response-time[0] ms] (:date[iso]) \\r\\n:user-agent\\r\\n\\r\\n';
     app.use(logger(logFormat, {stream: accessLogStream}));
 }
+
 // app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false, limit: '1kb'}));
 app.use(cookieParser());
@@ -59,7 +58,7 @@ app.use(function (req, res, next) {
 // 生产环境下的错误处理
 app.use(function(err, req, res, next) {
     if(req.app.get('env') === 'development') return next(err);
-    
+
     // connect ETIMEDOUT 218.65.5.214:2001、ETIMEDOUT、ESOCKETTIMEDOUT等情况
     err.message = err.message.toLowerCase().includes('timedout') ? 'TIMEDOUT' : err.message;
     let messageTrans = {
