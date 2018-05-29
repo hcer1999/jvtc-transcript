@@ -56,19 +56,19 @@ $ pm2 start npm -n jvtctr -- start
 
 本校的教务系统使用的是青果教务系统（就是那个辣鸡湖南青果软件有限公司做的），理论上使用该教务系统的学校都可以部署使用：
 
-首先找到教务系统的根路径(`ROOT_URL`)，如九江职业技术学院教务管理系统：`ROOT_URL` = <http://218.65.5.214:2001/jwweb/>
+1. 找到教务系统的根路径(`ROOT_URL`)，如九江职业技术学院教务管理系统：`ROOT_URL` = <http://218.65.5.214:2001/jwweb/>
 
-下一步确保以下页面能够正常访问：
+2. 尝试直接访问以下页面：
 
-- **ROOT_URL**/_data/index_LOGIN.aspx
-- **ROOT_URL**/sys/ValidateCode.aspx
+    - **ROOT_URL**/_data/index_LOGIN.aspx
+    - **ROOT_URL**/sys/ValidateCode.aspx
 
-如果以上页面能够正常访问，请**登录教务系统**，再尝试访问以下页面：
+3. **登录教务系统后**尝试访问以下页面：
 
-- **ROOT_URL**/xscj/c_ydcjrdjl.aspx
-- **ROOT_URL**/PUB/foot.aspx
+    - **ROOT_URL**/xscj/c_ydcjrdjl.aspx
+    - **ROOT_URL**/PUB/foot.aspx
 
-如果以上页面也能正常访问，且没有出现**您无权访问此页**的提示，即可尝试部署该程序
+如果以上页面都能正常访问，且没有出现**您无权访问此页**的提示，即可尝试部署该程序
 
 步骤基本与[部署](#部署)小节中一致，只需要额外添加环境变量`ROOT_URL`为学校教务系统根路径即可：
 
