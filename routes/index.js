@@ -5,18 +5,8 @@ const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
 const Log = require('../lib/Log');
 const actionLog = new Log((path.join(__dirname, '..', 'public', 'action.log')));
-const Captcha = require('../lib/Captcha');
-const sampleData = require('../lib/sample-data');
-const Recognizer = require('../lib/Recognizer');
 
 User.setRootUrl(process.env.ROOT_URL || 'http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
-
-const recognizer = new Recognizer();
-
-// 加载样本数据
-for(let {char, sampleVal} of sampleData) {
-    recognizer.addSampleData(char, sampleVal);
-}
 
 const sessionCachingTime = 10 * 60 * 1000;    // 用户会话记录缓存十分钟
 const sessionCache = new Cache(sessionCachingTime);
@@ -38,25 +28,6 @@ router.get('/', function(req, res, next) {
     let message = req.getEchoMessage();
     res.render('index', {message});
 });
-
-async function getCaptchaCode(user) {
-    let code = '';
-    while(1) {
-        let imageData = await user.getCaptcha();
-        let captcha = await new Captcha(imageData);
-        let slicedChars = await captcha.getChars();
-        if(slicedChars.length !== 4) {
-            continue;
-        }
-        for(let slicedChar of slicedChars) {
-            let sampleString = slicedChar.resize(24, 24).getSampleString();
-            let matchedChar = recognizer.matchSample(sampleString);
-            code += matchedChar;
-        }
-        break;
-    }
-    return code;
-}
 
 router.post('/', function(req, res, next) {
     let ip = req.ip;
@@ -88,11 +59,9 @@ router.post('/', function(req, res, next) {
     let {userid, password, range} = req.body;
     let user = new User();
     
-    user.init().then(getCaptchaCode).then(code => {
-        return user.login({userid, password, captcha: code});
-    }).then(logined => {
+    user.init().then(() => user.login({userid, password})).then(logined => {
         if(logined) return Promise.resolve(logined);
-        return getCaptchaCode(user).then(code => user.login({userid, password, captcha: code}));   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
+        return user.login({userid, password});   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
     }).then(logined => {
         if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
