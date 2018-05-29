@@ -55,23 +55,23 @@ router.post('/', function(req, res, next) {
     next();
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
     let {userid, password, range} = req.body;
-    let user = new User();
+    try {
+        let user = await new User().init();
+        if(!await user.login({userid, password}) && !await user.login({userid, password})) {    // 登录失败再尝试一次，因为偶尔可能验证码识别错误
+            throw new Error('Login Failed');
+        }
     
-    user.init().then(() => user.login({userid, password})).then(logined => {
-        if(logined) return Promise.resolve(logined);
-        return user.login({userid, password});   // 登录失败时重新尝试一次，因为偶尔可能验证码识别错误
-    }).then(logined => {
-        if(!logined) throw new Error('Login Failed');
         sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, '/transcript/' + range);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
-    }).catch(err => {
+        
+    } catch (err) {
         actionLog.log(`[${userid}]登录失败[${err.message}]`);
-        throw err;
-    }).catch(next);
+        return next(err);
+    }
 });
 
 async function getLastResult(user) {
