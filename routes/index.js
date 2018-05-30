@@ -8,8 +8,7 @@ const actionLog = new Log((path.join(__dirname, '..', 'public', 'action.log')));
 
 User.setRootUrl(process.env.ROOT_URL || 'http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
 
-const sessionCachingTime = 10 * 60 * 1000;    // 用户会话记录缓存十分钟
-const sessionCache = new Cache(sessionCachingTime);
+const sessionCache = new Cache(10 * 60 * 1000);     // 用户会话记录缓存十分钟
 
 let loginTimes = Object.create(null);    // 记录ip对应的尝试登录次数
 setInterval(() => loginTimes = Object.create(null), 30 * 60 * 1000)     // 每三十分钟清除一次ip登录次数记录
