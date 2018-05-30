@@ -5,13 +5,11 @@ const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
 const Log = require('../lib/Log');
 const actionLog = new Log((path.join(__dirname, '..', 'public', 'action.log')));
+const accessFrequencyLimit = require('../lib/accessFrequencyLimit');
 
 User.setRootUrl(process.env.ROOT_URL || 'http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
 
 const sessionCache = new Cache(10 * 60 * 1000);     // 用户会话记录缓存十分钟
-
-let loginTimes = Object.create(null);    // 记录ip对应的尝试登录次数
-setInterval(() => loginTimes = Object.create(null), 30 * 60 * 1000)     // 每三十分钟清除一次ip登录次数记录
 
 router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
@@ -28,18 +26,7 @@ router.get('/', function(req, res, next) {
     res.render('index', {message});
 });
 
-router.post('/', function(req, res, next) {
-    let ip = req.ip;
-
-    loginTimes[ip] = loginTimes[ip] ? loginTimes[ip] + 1 : 1;
-
-    // 该ip尝试登录次数过多，拒绝访问
-    if(loginTimes[ip] > 20) {
-        res.status(429);
-        next(new Error('Login Frequently'));
-    }
-    next();
-});
+router.post('/', accessFrequencyLimit(30 * 60 * 1000, 20));    // 每个IP每30分钟只能尝试登录20次
 
 router.post('/', function(req, res, next) {
     let {userid, password} = req.body;
