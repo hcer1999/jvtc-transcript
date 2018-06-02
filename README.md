@@ -37,6 +37,9 @@ $ npm start
 # 全局安装pm2
 $ npm install pm2 -g
 
+# 安装依赖项
+$ npm install
+
 # 设置环境变量
 $ export NODE_ENV=production
 
@@ -76,6 +79,7 @@ $ pm2 start npm -n jvtctr -- start
 $ export ROOT_URL=http://218.65.5.214:2001/jwweb/
 $ npm start
 ```
+
 
 ## 网站
 
