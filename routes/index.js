@@ -62,13 +62,15 @@ router.post('/', async function(req, res, next) {
                 throw new Error('Login Failed');
             }
             sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
+            actionLog.log(`[${user.userid}][${user.username}]登录成功`);
+
         } else {
             sessionCache.refresh(id);   // 刷新缓存有效期
+            actionLog.log(`[${user.userid}][${user.username}]通过缓存登录成功`);
         }
 
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, '/transcript/' + range);
-        actionLog.log(`[${user.userid}][${user.username}]登录成功`);
         
     } catch (err) {
         actionLog.log(`[${userid}]登录失败[${err.message}]`);
