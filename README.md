@@ -6,6 +6,8 @@
 
 请确保已安装最新版本的Node.js
 
+### 简单部署
+
 安装依赖项：
 
 ```
@@ -29,9 +31,7 @@ $ export NODE_ENV=production
 $ npm start
 ```
 
----
-
-使用[pm2](https://github.com/Unitech/pm2)后台持久运行程序：
+### 使用pm2持久部署
 
 ```
 # 全局安装pm2
