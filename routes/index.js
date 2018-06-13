@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
 const path = require('path');
@@ -42,14 +43,29 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/', async function(req, res, next) {
+
     let {userid, password, range} = req.body;
+
     try {
-        let user = await new User().init();
-        if(!await user.login({userid, password}) && !await user.login({userid, password})) {    // 登录失败再尝试一次，因为偶尔可能验证码识别错误
-            throw new Error('Login Failed');
+        // 根据用户名和密码创建hash
+        const userHash = (userid, password) => crypto.createHash('sha256').update(userid + password).digest('hex');
+
+        const id = userHash(userid, password);
+        let user = sessionCache.get(id);    // 尝试从会话缓存中获取
+
+        if(!user) {     // 缓存中没有该用户
+            user = await new User(id).init();   // 创建用户实例     
+            if(
+                !await user.login({userid, password}) && 
+                !await user.login({userid, password}) // 登录失败再尝试一次，因为偶尔可能验证码识别错误
+            ) {
+                throw new Error('Login Failed');
+            }
+            sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
+        } else {
+            sessionCache.refresh(id);   // 刷新缓存有效期
         }
-    
-        sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
+
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, '/transcript/' + range);
         actionLog.log(`[${user.userid}][${user.username}]登录成功`);
