@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const os = require('os');
 const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -24,8 +25,9 @@ if (app.get('env') === 'development') {
     app.use(logger('dev'));
 } else {
     // create a write stream (in append mode)
-    let accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
-    let logFormat = '[:remote-addr] :method :status :url [:response-time[0] ms] (:date[iso]) \\r\\n:user-agent\\r\\n\\r\\n';
+    const EOL = os.EOL == '\r\n' ? '\\r\\n' : '\\n';
+    const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
+    const logFormat = `[:remote-addr] :method :status :url [:response-time[0] ms] (:date[iso])${EOL}:user-agent${EOL}${EOL}`;
     app.use(logger(logFormat, {stream: accessLogStream}));
 }
 
