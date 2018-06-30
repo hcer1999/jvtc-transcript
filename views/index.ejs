@@ -190,6 +190,20 @@
                 el_form = document.querySelector('.login-form'),
                 el_submit = document.querySelector('[type="submit"]');
 
+
+            var onQueryBegin = function() {
+                el_submit.value = '正在查询';
+                el_submit.disabled = true;
+            }
+
+            var onQueryEnd = (function() {
+                var value = el_submit.value;
+                return function() {
+                    el_submit.value = value;
+                    el_submit.disabled = false;
+                }
+            })();
+
             // 去除学号字段的非数字字符
             el_userid.addEventListener('change', function(ev) {
                 ev.target.value = [].slice.call(ev.target.value).filter(function(c){
@@ -216,15 +230,15 @@
                     ev.preventDefault();
                     el_password.focus();
                 } else {
-                    el_submit.value = '正在查询';
-                    el_submit.disabled = true;
+                    onQueryBegin();
                 }
             });
-        });
 
-        // 阻止bfcache：https://developer.mozilla.org/zh-CN/Firefox/Releases/1.5/Using_Firefox_1.5_caching
-        // bfcache导致使用后退按钮返回本页面时提交按钮依然显示正在查询
-        window.onbeforeunload = function() {};
+            // 阻止bfcache：https://developer.mozilla.org/zh-CN/Firefox/Releases/1.5/Using_Firefox_1.5_caching
+            // bfcache导致使用后退按钮返回本页面时提交按钮依然显示正在查询
+            // window.onunload = function() {};
+            window.onpagehide = onQueryEnd;     // 更好的完成了上面被注释代码的任务
+        });
     </script>
 </body>
 </html>
