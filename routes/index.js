@@ -6,7 +6,7 @@ const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
 const Log = require('../lib/Log');
 const actionLog = new Log(
-    path.join(__dirname, '..', 'public', 'action.log'),
+    path.join(__dirname, '..', 'action.log'),
     [() => Date.now().toString()]
 );
 const accessFrequencyLimit = require('../lib/accessFrequencyLimit');
