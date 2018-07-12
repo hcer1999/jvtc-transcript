@@ -1,19 +1,26 @@
+const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const parseLog = require('../lib/parseLog');
 const Cache = require('../lib/Cache');
 const User = require('../lib/jwweb');
 const Log = require('../lib/Log');
-const actionLog = new Log(
-    path.join(__dirname, '..', 'action.log'),
-    [() => Date.now().toString()]
-);
+const actionLogPath = path.join(__dirname, '..', 'action.log');
+const actionLog = new Log(actionLogPath, [() => Date.now().toString()]);
 const accessFrequencyLimit = require('../lib/accessFrequencyLimit');
 
 User.setRootUrl(process.env.ROOT_URL || 'http://218.65.5.214:2001/jwweb/');     // 设置教务系统根路径
 
 const sessionCache = new Cache(10 * 60 * 1000);     // 用户会话记录缓存十分钟
+
+const actionLogs = fs.existsSync(actionLogPath) ? parseLog(fs.readFileSync(actionLogPath, 'utf8')) : [];
+
+function log(...args) {
+    const str = actionLog.log(...args);
+    actionLogs.push(...parseLog(str));
+}
 
 router.use(function(req, res, next) {
     let uid  = req.cookies.uid;
@@ -65,18 +72,18 @@ router.post('/', async function(req, res, next) {
                 throw new Error('Login Failed');
             }
             sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
-            actionLog.log('登录成功', user.userid, user.username);
+            log('登录成功', user.userid, user.username);
 
         } else {
             sessionCache.refresh(id);   // 刷新缓存有效期
-            actionLog.log('通过缓存登录成功', user.userid, user.username);
+            log('通过缓存登录成功', user.userid, user.username);
         }
 
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, '/transcript/' + range);
         
     } catch (err) {
-        actionLog.log('登录失败', userid, err.message);
+        log('登录失败', userid, err.message);
         return next(err);
     }
 });
@@ -106,7 +113,7 @@ router.get('/transcript/latest', function(req, res, next) {
     if(!req.user) throw new Error('UID Not Exist');
     
     getLastResult(req.user).then(result => {
-        actionLog.log('查询成绩', result.userid, result.username, result.semester);        
+        log('查询成绩', result.userid, result.username, result.semester);        
         res.render('results', {results: [result]});
     }).catch(next);
 });
@@ -119,7 +126,7 @@ router.get('/transcript/all', async function(req, res, next) {
         let results = [];
         let result = await getLastResult(req.user);
         while(result.transcript.length !== 0) {
-            actionLog.log('查询成绩', result.userid, result.username, result.semester);
+            log('查询成绩', result.userid, result.username, result.semester);
             results.push(result);
             let semester = result.semester;
             if(semester[semester.length - 1] === '0') {
