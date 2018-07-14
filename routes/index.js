@@ -142,4 +142,56 @@ router.get('/transcript/all', async function(req, res, next) {
     }
 });
 
+
+// 下面是统计路由
+
+const countCache = {
+    content: '',
+    date: 0
+}
+router.get('/statistics/count', function(req, res, next) {
+    const itemTmpl = {
+        '登录成功': 0,
+        '通过缓存登录成功': 0,
+        '登录失败': 0,
+        '查询成绩': 0
+    };
+    let o = {};
+
+    // 统计一次时间要几百毫秒以上，做个缓存凑合着用
+    if(Date.now() < countCache.date + 10 * 1000) {      // 10秒内请求过
+        return res.type('json').send(countCache.content);
+    }
+
+    for(let ac of actionLogs) {
+        let date = new Date(+ac.date + 8 * 60 * 60 * 1000);    // UTC + 8
+        let year = date.getUTCFullYear(),
+            mon  = date.getUTCMonth() + 1,
+            day  = date.getUTCDate();
+
+        o[year]           || (o[year] = {});
+        o[year][mon]      || (o[year][mon] = {});
+        o[year][mon][day] || (o[year][mon][day] = {...itemTmpl});
+        
+        o[year][mon][day][ac.event]++;
+    }
+
+    // 填充数据，使得每年的每个月每一天都有数据
+    for(let year of Object.keys(o)) {
+        for(let mon = 1; mon <= 12; mon++) {
+            o[year][mon] || (o[year][mon] = {});
+            let days = new Date(year, mon, 0).getDate();  // 获取这个月的天数
+            for(let day = 1; day <= days; day++) {
+                o[year][mon][day] || (o[year][mon][day] = {...itemTmpl});
+            }
+        }
+    }
+
+    // 更新缓存
+    countCache.content = JSON.stringify(o);
+    countCache.date = Date.now();
+
+    res.type('json').send(countCache.content);
+});
+
 module.exports = router;
