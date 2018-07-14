@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>九江职业技术学院成绩查询系统—使用统计</title>
+    <style>
+        html, body {
+            margin: 0;
+        }
+
+        #chart {
+            min-width: 480px;
+            width: 100%;
+            height: 420px;
+        }
+
+        #chart-wrap {
+            text-align: center;
+        }
+
+        #back-btn {
+            width: 128px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="chart-wrap">
+        <div id="chart"></div>
+        <button id="back-btn">后退</button>
+    </div>
+
+    <script src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+    <script>
+
+        // 初始化echarts实例
+        var myChart = echarts.init(document.getElementById('chart'));
+
+        window.addEventListener('resize', myChart.resize.bind());
+
+        // 图表默认配置项
+        var defaultOption = {
+            color: ['#2196F3', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+            title: {
+                text: '使用人数统计'
+            },
+            tooltip : {
+                // 不清楚为什么，这里必须留一个空的顶级tooltip配置
+                // 否则series的tooltip将无法显示
+            },
+            legend: {
+                data:[]
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: []
+        };
+
+        myChart.setOption(defaultOption);
+
+        function sumObjectKeys(o, keys) {
+            var sum = 0;
+            var dataSum = 0;
+            var isData = true;
+
+            if(typeof o !== 'object') throw new Error();
+
+            keys.forEach(function(k) {
+                if(typeof o[k] !== 'number') {
+                    isData = false;
+                } else {
+                    dataSum += o[k];
+                }
+            });
+
+            if(isData) return dataSum;
+
+            Object.keys(o).forEach(function(k) {
+                sum += sumObjectKeys(o[k], keys);
+            });
+
+            return sum;
+        }
+
+        function tooltipFormatter(countData) {
+            var cacheLabel;
+            var cache;
+
+            return function(params) {
+                var dateRange = params.data[2];
+                var data;
+
+                if(dateRange.length === 1) {
+                    data = countData[dateRange[0]];
+                } else if (dateRange.length === 2) {
+                    data = countData[dateRange[0]][dateRange[1]];
+                } else if (dateRange.length === 3) {
+                    data = countData[dateRange[0]][dateRange[1]][dateRange[2]];
+                } else throw new Error();
+                
+                if(cacheLabel === dateRange.join()) {
+                    return cache;
+                }
+
+                cacheLabel = dateRange.join();
+                cache = '<div style="text-align: center;">' + dateRange.join('-') + '</div>'
+                    + '登录成功：' + sumObjectKeys(data, ['登录成功']) + '次' + '<br>'
+                    + '通过缓存登录成功：' + sumObjectKeys(data, ['通过缓存登录成功']) + '次' + '<br>'
+                    + '登录失败：' + sumObjectKeys(data, ['登录失败']) + '次' + '<br>'
+                    + '查询成绩：' + sumObjectKeys(data, ['查询成绩']) + '次';
+
+                return cache;
+            }
+        }
+
+        function getDataOptions(countData, dateRange) {
+            dateRange = dateRange || [];   // 默认参数
+
+            var sData = [];
+            var xData = [];
+            var postfix = '';
+            var data;
+            
+            if(dateRange.length === 0) {
+                data = countData;   //统计每年数据
+                postfix = '年';
+            } else if (dateRange.length === 1) {
+                data = countData[dateRange[0]];    // 一年的每个月统计
+                postfix = '月';
+            } else if (dateRange.length === 2) {
+                data = countData[dateRange[0]][dateRange[1]];  // 一个月的每一天统计
+                postfix = '日';
+            }
+
+            Object.keys(data).forEach(function(unit) {
+                var sum = sumObjectKeys(data[unit], ['登录成功', '通过缓存登录成功']);
+                xData.push(unit + postfix);
+                sData.push([unit + postfix, sum, dateRange.concat(unit)]);      // [x轴数据, y轴数据, 下一步的dateRange(在click事件与tooltop中使用)]
+            });
+
+            return {
+                legend: {
+                    data:['登录人数']
+                },
+                xAxis: {
+                    type: 'category',
+                    data: xData
+                },
+                series: [{
+                    tooltip: {
+                        show: true,
+                        trigger: 'item',
+                        formatter: tooltipFormatter(countData)
+                    },
+                    name: '登录人数',
+                    type: 'bar',
+                    data: sData,
+                    barMaxWidth: '100px',
+                    barMinHeight: '2'
+                }]
+            };
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/statistics/count');
+        xhr.send();
+        
+        xhr.addEventListener('load', function() {
+            if(!(this.readyState === this.DONE && this.status === 200)) return;
+
+            var countData = JSON.parse(xhr.responseText);
+            var topOption = getDataOptions(countData);
+
+            myChart.setOption(topOption);
+            var chartStack = {   // 图表状态记录栈
+                stack: [topOption],
+                getLength: function() {
+                    return this.stack.length;
+                },
+                push: function(option) {
+                    this.stack.push(option);
+                    myChart.setOption(option);
+                },
+                pop: function(option) {
+                    var stack = this.stack;
+                    stack.pop();
+                    var top = stack[stack.length - 1];
+                    myChart.setOption(top);     // 设置为上一层图表状态
+                }
+            }
+
+            document.getElementById('back-btn').addEventListener('click', function(ev) {
+                if(chartStack.getLength() <= 1) return;   // 长度为1时只有顶层图表
+                chartStack.pop();
+            });
+
+            myChart.on('click', function(params) {
+                if(params.seriesName === '登录人数') {
+                    var dateRange = params.data[2];
+                    if(dateRange.length >= 3) return;   // 统计单位已经是最小单位(天)
+                    var option = getDataOptions(countData, dateRange);
+                    chartStack.push(option);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
