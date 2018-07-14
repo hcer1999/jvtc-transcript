@@ -145,6 +145,10 @@ router.get('/transcript/all', async function(req, res, next) {
 
 // 下面是统计路由
 
+router.get('/statistics', function(req, res, next) {
+    res.sendFile(path.resolve(__dirname, '../public/statistics.html'));
+});
+
 const countCache = {
     content: '',
     date: 0
