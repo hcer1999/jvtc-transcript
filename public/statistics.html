@@ -39,7 +39,7 @@
         // 初始化echarts实例
         var myChart = echarts.init(document.getElementById('chart'));
 
-        window.addEventListener('resize', myChart.resize.bind());
+        window.addEventListener('resize', myChart.resize.bind(myChart));
 
         // 图表默认配置项
         var defaultOption = {
