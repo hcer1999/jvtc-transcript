@@ -166,14 +166,36 @@
             };
         }
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/statistics/count');
-        xhr.send();
-        
-        xhr.addEventListener('load', function() {
-            if(!(this.readyState === this.DONE && this.status === 200)) return;
+        function fetchCountData(cb) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/statistics/count');
+            xhr.send();
 
-            var countData = JSON.parse(xhr.responseText);
+            xhr.addEventListener('load', function() {
+                if(this.readyState !== this.DONE) return;
+                if(this.status !== 200) {
+                    var err = new Error('Unexpected status code');
+                    err.status = this.status;
+                    return cb(err);
+                }
+                cb(null, JSON.parse(xhr.responseText));
+            });
+        }
+        
+        fetchCountData(function(err, countData) {
+            if(!err) return onFetchedCountData(countData);
+
+            console.error(err);
+
+            // 再次尝试获取数据
+            fetchCountData(function(err, countData) {
+                if(err) throw err;
+                onFetchedCountData(countData);
+            });
+        });
+
+        function onFetchedCountData(countData) {
+            
             var topOption = getDataOptions(countData);
 
             myChart.setOption(topOption);
@@ -207,7 +229,7 @@
                     chartStack.push(option);
                 }
             });
-        });
+        }
 
     </script>
 </body>
