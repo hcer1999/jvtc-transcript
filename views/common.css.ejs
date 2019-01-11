@@ -1,0 +1,101 @@
+<style>
+    h1 {
+        font-size: 23px;
+        width: 100%;
+        margin: 0;
+        font-weight: normal;
+        color: #fff;
+        text-align: center;
+        letter-spacing: 2px;
+    }
+
+    body {
+        height: 100vh;
+        margin: 0;
+        font-size: 13px;
+        font-family: 'Microsoft YaHei';
+    }
+
+    body {
+        background: #acb6e5;  /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #86fde8, #acb6e5);  /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #86fde8, #acb6e5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+
+    .card {
+        background: #fff;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 10px 0px;
+        border-radius: 4px;
+        padding: 4px;
+    }
+
+    .form-group {
+        width: 80%;
+        margin: 0 auto;
+        margin-bottom: 22px;
+    }
+
+    input {
+        outline: none;
+    }
+
+    .card input {
+        border: none;
+        background: transparent;
+    }
+
+    .card input[type="text"],
+    .card input[type="password"] {
+        display: block;            
+        width: 100%;
+        border-bottom: 1px solid #e1e1e1;
+        line-height: 24px;
+    }
+
+    .card input[type="submit"] {
+        display: block;
+        width: 100%;
+        line-height: 32px;
+        background: #00bcd4;
+        cursor: pointer;
+        border-radius: 4px;
+        color: #fff;
+    }
+
+    .card input[type="submit"]:disabled {
+        opacity: .8;
+    }
+
+    /* 去除Chrome自动填写的预设样式 */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: #000;
+        -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+        box-shadow: 0 0 0px 1000px #fff inset;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+    }
+
+    footer a {
+        color: #fefefe;
+    }
+
+    footer p {
+        color: #fefefe;
+        margin: 4px;
+    }
+
+    @media (max-height: 480px) {
+        footer {
+            display: none;
+        }
+    }
+</style>

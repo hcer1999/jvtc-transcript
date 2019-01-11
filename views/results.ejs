@@ -5,20 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>九江职业技术学院成绩查询系统</title>
+    <%- include('./common.css.ejs') %>
     <style>
-        body {
-            height: 100vh;
-            margin: 0;
-            font-size: 13px;
-            font-family: 'Microsoft YaHei';
-        }
-
-        body {
-            background: #acb6e5;  /* fallback for old browsers */
-            background: -webkit-linear-gradient(to right, #86fde8, #acb6e5);  /* Chrome 10-25, Safari 5.1-6 */
-            background: linear-gradient(to right, #86fde8, #acb6e5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-        }
-
         body {
             position: relative;
         }
@@ -32,9 +20,6 @@
             padding: 0 26px;
             padding-bottom: 24px;
             max-width: 560px;
-            background: #fff;
-            box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 10px 0px;
-            border-radius: 4px;
             overflow: hidden;
             font-size: 12px;            
         }
@@ -126,20 +111,6 @@
 
         footer {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-        }
-
-        footer a {
-            color: #fefefe;
-        }
-
-        footer p {
-            color: #fefefe;
-            margin: 4px;
         }
     </style>
 </head>
@@ -148,7 +119,7 @@
 
     <div class="transcript-container">
         <% for(let result of results) { %>
-        <div class="semester-transcript">
+        <div class="semester-transcript card">
             <h2 class="title">成绩单</h2>
             <div class="info">
                 <div class="username">
