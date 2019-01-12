@@ -39,6 +39,7 @@ router.post('/reset', async function(req, res, next) {
     const idnumber = req.body.idnumber.trim();
     const user = await new User().init();
     const {success, message} = await user.resetPassword(userid, idnumber);
+    log('重置密码', userid, idnumber, success, message);
     res.json({success, message});
 });
 
