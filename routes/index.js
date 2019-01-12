@@ -30,6 +30,18 @@ router.use(function(req, res, next) {
     next();
 });
 
+router.get('/reset', function(req, res, next) {
+    res.render('reset');
+});
+
+router.post('/reset', async function(req, res, next) {
+    const userid = req.body.userid.trim()
+    const idnumber = req.body.idnumber.trim();
+    const user = await new User().init();
+    const {success, message} = await user.resetPassword(userid, idnumber);
+    res.json({success, message});
+});
+
 router.get('/', function(req, res, next) {
     let message = req.getEchoMessage();
     res.render('index', {message});

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>九江职业技术学院成绩查询系统—重置教务系统密码</title>
+    <%- include('./common.css.ejs') %>
+    <style>
+        h1 {
+            position: absolute;
+            top: -62px;
+        }
+
+        .form-container {
+            position: fixed;
+            left: calc(50vw - 340px / 2);
+            top: calc(50vh - 180px / 2 - 5vh);
+            min-height: 180px;
+            width: 340px;
+            padding-top: 26px;
+        }
+
+        .message {
+            width: 80%;
+            margin: 0 auto;
+            color: #15abee;
+            line-height: 16px;
+            word-break: break-all;
+            padding-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container card">
+        <h1>重置教务系统密码</h1>
+        <form action="/reset" method="POST" id="reset-form">
+            <div class="message">如果重置密码成功后依然无法登录，可能是账号已被锁定或其它异常情况，请联系班主任进行处理</div>
+            <div class="form-group">
+                <label>学号：<input type="text" name="userid" id="userid"></label>
+            </div>
+            <div class="form-group">
+                <label>身份证号：<input type="text" name="idnumber" id="idnumber"></label>
+            </div>
+            <div class="form-group">
+                <input type="submit" id="submit-btn">
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('reset-form').addEventListener('submit', function (ev) {
+                ev.preventDefault();
+                document.getElementById('submit-btn').disabled = true;
+                fetch('/reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userid: document.getElementById('userid').value,
+                        idnumber: document.getElementById('idnumber').value
+                    })
+                })
+                .then(function (res) {
+                    return res.json();
+                })
+                .then(function (json) {
+                    alert(json.message);
+                })
+                .catch(function (err) {
+                    alert(err.message);
+                })
+                .then(function () {
+                    document.getElementById('submit-btn').disabled = false;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -31,7 +31,7 @@ if (app.get('env') === 'development') {
     app.use(logger(logFormat, {stream: accessLogStream}));
 }
 
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false, limit: '1kb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
