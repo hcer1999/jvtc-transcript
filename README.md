@@ -33,5 +33,5 @@ $ pm2 start npm -n jvtctr -- start
 
 ## 网站
 
-<http://cj.wcni.kim/>
+<http://cj.wcnm.kim/>
 
