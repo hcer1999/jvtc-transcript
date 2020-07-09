@@ -62,9 +62,9 @@ router.post('/', async function(req, res, next) {
         let user = sessionCache.get(id);    // 尝试从会话缓存中获取
 
         if(!user) {     // 缓存中没有该用户
-            user = await new User(id).init();   // 创建用户实例     
+            user = await new User(id).init();   // 创建用户实例
             if(!await user.login({userid, password})) {
-                throw new Error('Login Failed');
+                throw new Error('登陆失败，请检测账号密码正确性！');
             }
             sessionCache.set(user.id, user, (user) => user.logout());     // User实例成功登录后将User实例存入sessionCache，并在cache过期时调用logout注销登录
             log('登录成功', user.userid, user.username);
@@ -75,7 +75,7 @@ router.post('/', async function(req, res, next) {
 
         res.cookie('uid', user.id);     // 在cookie中存储sessionCache的key
         res.redirect(303, '/transcript/' + range);
-        
+
     } catch (err) {
         log('登录失败', userid, err.message);
         return next(err);
@@ -87,7 +87,7 @@ async function getResults(user) {
     const result = await user.getResults();
 
     if(result.transcript.length === 0) {
-        throw new Error('No Result');   // 没有成绩的新生
+        throw new Error('无成绩');   // 没有成绩的新生
     }
 
     const transcript = new Map();
@@ -99,8 +99,8 @@ async function getResults(user) {
             transcript.get(semester).transcript.push(item);
         } else {
             transcript.set(semester, {
-                semester, 
-                username: result.username, 
+                semester,
+                username: result.username,
                 userid: result.userid,
                 transcript: [item]
             });
@@ -113,17 +113,17 @@ async function getResults(user) {
 // 查询最后一个有成绩的学期的成绩的路由
 router.get('/transcript/latest', function(req, res, next) {
     if(!req.user) throw new Error('UID Not Exist');
-    
+
     getResults(req.user).then(results => {
         const result = results[0];
-        log('查询成绩', result.userid, result.username, result.semester);        
+        log('查询成绩', result.userid, result.username, result.semester);
         res.render('results', {results: [result]});
     }).catch(next);
 });
 
 // 查询所有有成绩的学期的成绩的路由
 router.get('/transcript/all', async function(req, res, next) {
-    if(!req.user) return next(new Error('UID Not Exist'));
+    if(!req.user) return next(new Error('学期UID不存在'));
 
     const results = await getResults(req.user);
     for(const i of results) {
@@ -166,7 +166,7 @@ router.get('/statistics/count', function(req, res, next) {
         o[year]           || (o[year] = {});
         o[year][mon]      || (o[year][mon] = {});
         o[year][mon][day] || (o[year][mon][day] = {...itemTmpl});
-        
+
         o[year][mon][day][ac.event]++;
     }
 

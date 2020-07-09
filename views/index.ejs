@@ -89,10 +89,10 @@
 
         <footer>
             <p>九江职业技术学院成绩查询系统 · <a href="https://github.com/Chocolatl/jvtc-transcript/">GitHub</a></p>
-            <p>Copyright &copy; 2018 Chocolatl</p>
+            <p>Copyright &copy; 2020 Chocolatl | <a href="https://blog.wcnm.kim/">Hcer</a></p>
         </footer>
     </div>
-    
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -121,7 +121,7 @@
                     return c >= '0' && c <= '9';
                 }).join('');
             });
-    
+
             // 没有填账号或密码
             [el_userid, el_password].forEach(function(el) {
                 el.addEventListener('blur', function(ev) {
@@ -132,7 +132,7 @@
                     }
                 });
             });
-            
+
             el_form.addEventListener('submit', function(ev) {
                 if(el_userid.value === '') {
                     ev.preventDefault();

@@ -1,5 +1,11 @@
 2018年9月学校使用了新的教务系统，旧的教务系统已于2018年10月停止使用，原先的成绩查询系统代码归档在[kingo](https://github.com/Chocolatl/jvtc-transcript/tree/kingo)标签中
 
+## 更新日志
+- 2020/07/09
+    - 修复成绩获取失败的BUG
+    - 部分提示改为中文
+    - 更换部署地址
+
 ## 部署
 
 请确保已安装最新版本的Node.js
@@ -27,4 +33,5 @@ $ pm2 start npm -n jvtctr -- start
 
 ## 网站
 
-<https://cj.choclatl.com/>
+<http://cj.wcni.kim/>
+
